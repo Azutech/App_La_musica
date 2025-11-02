@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/user.dto';
 
@@ -6,8 +15,8 @@ import { CreateUserDto } from './dto/user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.signup(createUserDto);
+  @MessagePattern({ cmd: 'signup' })
+  async signup(data: CreateUserDto) {
+    return this.usersService.signup(data);
   }
 }
