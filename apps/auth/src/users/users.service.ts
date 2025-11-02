@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { UserRepository } from './repository/user.repository';
 
 @Injectable()
-export class AuthService {
+export class UsersService {
   constructor(private userRepo: UserRepository, ) {}
 
   async signup(dto: CreateUserDto) {
