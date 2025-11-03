@@ -1,23 +1,38 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+} from '@nestjs/common';
+import { CreateUserDto, LoginDto } from './dto/user.dto';
+import * as bcrypt from 'bcrypt';
+import { UserRepository } from './repository/user.repository';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(private userRepo: UserRepository) {}
+
+  async signup(dto: CreateUserDto) {
+    const existing = await this.userRepo.findByEmail(dto.email);
+    if (existing) throw new ConflictException('Email already exists');
+
+    const hash = await bcrypt.hash(dto.password, 10);
+    const user = await this.userRepo.createUser(dto.email, hash);
+
+    return {
+      user,
+    };
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll () {
+    const allUsers = await this.userRepo.findAll()
+    return allUsers
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
+  async login(dto: LoginDto) {
+    const user = await this.userRepo.findByEmail(dto.email);
+    if (!user) throw new UnauthorizedException('Invalid credentials');
 
-
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    const isMatch = await bcrypt.compare(dto.password, user.password);
+    if (!isMatch) throw new UnauthorizedException('Invalid credentials');
   }
 }
