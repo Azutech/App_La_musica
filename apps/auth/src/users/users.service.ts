@@ -18,7 +18,9 @@ export class UsersService {
     const hash = await bcrypt.hash(dto.password, 10);
     const user = await this.userRepo.createUser(dto.email, hash);
 
-    // return this.signToken(user.id, user.email);
+    return {
+      user,
+    };
   }
 
   async login(dto: LoginDto) {

@@ -15,7 +15,7 @@ import { CreateUserDto } from './dto/user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @MessagePattern({ cmd: 'signup' })
+  @MessagePattern({ cmd: 'auth_signup' })
   async signup(data: CreateUserDto) {
     return this.usersService.signup(data);
   }
