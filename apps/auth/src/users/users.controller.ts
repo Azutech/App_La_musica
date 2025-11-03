@@ -17,6 +17,10 @@ export class UsersController {
 
   @MessagePattern({ cmd: 'auth_signup' })
   async signup(data: CreateUserDto) {
-    return this.usersService.signup(data);
+    return await this.usersService.signup(data);
+  }
+  @MessagePattern({ cmd: 'all_users' })
+  async findAll() {
+    return await this.usersService.findAll();
   }
 }

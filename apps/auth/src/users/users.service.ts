@@ -23,6 +23,11 @@ export class UsersService {
     };
   }
 
+  async findAll () {
+    const allUsers = await this.userRepo.findAll()
+    return allUsers
+  }
+
   async login(dto: LoginDto) {
     const user = await this.userRepo.findByEmail(dto.email);
     if (!user) throw new UnauthorizedException('Invalid credentials');

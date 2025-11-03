@@ -22,15 +22,20 @@ export class AuthService {
     }
   }
 
-//   async signup(email: string, password: string) {
-//     return firstValueFrom(
-// this.authClient.send({ cmd: 'signup' }, { email, password })    );
-//   }
+  async allUsers() {
+    try {
+      const result = await firstValueFrom(
+        this.authClient
+          .send({ cmd: 'all_users' }, {})
+          .pipe(timeout(10_000)), // 10 s guard
+      );
+      return result;               // { id, email }
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
 
-//   async login(email: string, password: string) {
-//     return firstValueFrom(
-//       this.authClient.send('auth_login', { email, password })
-//     );
-//   }
+
 }
 
