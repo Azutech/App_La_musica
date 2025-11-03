@@ -18,8 +18,8 @@ export class UserRepository {
     });
   }
 
-  async findAll() : Promise<User[]> {
-    return this.prisma.user.findMany()
+  async findAll(): Promise<User[]> {
+    return this.prisma.user.findMany();
   }
 
   async findById(id: string): Promise<User | null> {

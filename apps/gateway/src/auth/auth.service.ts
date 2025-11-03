@@ -15,7 +15,7 @@ export class AuthService {
           .send({ cmd: 'auth_signup' }, { email, password })
           .pipe(timeout(10_000)), // 10 s guard
       );
-      return result;               // { id, email }
+      return result;              
     } catch (err: any) {
       // Nest already turned RPC exceptions into proper HTTP errors
       throw err;
@@ -29,7 +29,7 @@ export class AuthService {
           .send({ cmd: 'all_users' }, {})
           .pipe(timeout(10_000)), // 10 s guard
       );
-      return result;               // { id, email }
+      return result;              
     } catch (err: any) {
       // Nest already turned RPC exceptions into proper HTTP errors
       throw err;
