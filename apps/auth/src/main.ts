@@ -17,9 +17,12 @@ async function bootstrap() {
     await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
       transport: Transport.REDIS,
       options: {
-        host: configService.get<string>('REDIS_HOST'),
-        port: configService.get<number>('REDIS_PORT'),
-        password: configService.get<string>('REDIS_PASSWORD'),
+          host: 'redis-11230.c85.us-east-1-2.ec2.redns.redis-cloud.com',
+            port: 11230,
+            username: "default",
+            password: configService.get<string>('REDIS_PASSWORD'),
+            // tls: {},
+
       },
     });
 
