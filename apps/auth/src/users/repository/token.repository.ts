@@ -18,13 +18,25 @@ export class TokenRepository {
   }
 
   async findByEmail(email: string): Promise<Token> {
-    return this.prisma.token.findFirst({
+    return await this.prisma.token.findFirst({
       where: { email },
     });
   }
 
+    async findTokenByCode(code: number): Promise<Token | null> {
+       return await this.prisma.token.findFirst({
+      where: { code },
+    });
+  }
+
+async deleteTokenCode(code: number): Promise<void> {
+  await this.prisma.token.deleteMany({
+    where: { code },
+  });
+}
+
   async deleteExpiredTokens() {
-    return this.prisma.token.deleteMany({
+    return await this.prisma.token.deleteMany({
       where: { expiresAt: { lt: new Date() } },
     });
   }

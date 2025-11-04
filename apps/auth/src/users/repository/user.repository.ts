@@ -13,7 +13,7 @@ export class UserRepository {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.prisma.user.findUnique({
+    return this.prisma.user.findFirst({
       where: { email },
     });
   }
@@ -27,4 +27,14 @@ export class UserRepository {
       where: { id },
     });
   }
+
+async updateUser(
+  id: string, 
+  data: any
+): Promise<User> {
+  return this.prisma.user.update({
+    where: { id },
+    data, 
+  });
+}
 }
