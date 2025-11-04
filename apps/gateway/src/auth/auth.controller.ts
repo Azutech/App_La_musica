@@ -7,11 +7,14 @@ import {
   Req,
   UseGuards,
   Put,
+  UseFilters,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { LoginDto, CreateUserDto, CodeDto } from './dtos/auth.dto';
 import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
+// import { RpcExceptionFilter } from 'src/common/filters/rpc-exception.filter';
 
 @Controller('auth')
 export class AuthController {
@@ -40,9 +43,18 @@ export class AuthController {
     return this.authService.user_dashboard(userId);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Put('verification')
   async verification(@Body() codeDto: CodeDto, @Res() res: Response) {
-    return this.authService.verification(codeDto);
+    const verification = await this.authService.verification(codeDto);
+    return res.status(HttpStatus.OK).json(verification);
+  }
+
+  @Put('resend_verification')
+  async resend_verification(
+    @Body('email') email: string,
+    @Res() res: Response,
+  ) {
+    const verification = await this.authService.resend_verification(email);
+    return res.status(HttpStatus.OK).json(verification);
   }
 }

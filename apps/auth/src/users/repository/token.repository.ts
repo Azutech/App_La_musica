@@ -23,18 +23,22 @@ export class TokenRepository {
     });
   }
 
-    async findTokenByCode(code: number): Promise<Token | null> {
-       return await this.prisma.token.findFirst({
+  async findTokenByCode(code: number): Promise<Token | null> {
+    return await this.prisma.token.findFirst({
       where: { code },
     });
   }
 
-async deleteTokenCode(code: number): Promise<void> {
-  await this.prisma.token.deleteMany({
-    where: { code },
-  });
-}
-
+  async deleteTokenCode(code: number): Promise<void> {
+    await this.prisma.token.deleteMany({
+      where: { code },
+    });
+  }
+  async deleteTokenI(email: string): Promise<void> {
+    await this.prisma.token.deleteMany({
+      where: { email },
+    });
+  }
   async deleteExpiredTokens() {
     return await this.prisma.token.deleteMany({
       where: { expiresAt: { lt: new Date() } },

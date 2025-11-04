@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core'; // ← THIS IS THE RIGHT ONE
-import { RpcExceptionFilter } from './common/filters/rpc-exception.filter';
+import { RpcToHttpExceptionFilter } from './common/filters/rpc-exception.filter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -20,7 +20,7 @@ import { LoggingInterceptor } from './common/filters/logging.interceptor';
     AppService,
     {
       provide: APP_FILTER,
-      useClass: RpcExceptionFilter,
+      useClass: RpcToHttpExceptionFilter,
     },
     {
       provide: APP_INTERCEPTOR,

@@ -28,11 +28,15 @@ export class UsersController {
     return await this.usersService.login(loginDto);
   }
   @MessagePattern({ cmd: 'user_dashboard' })
-  async dashboard(userId : string) {
+  async dashboard(userId: string) {
     return await this.usersService.dashboard(userId);
   }
-  @MessagePattern({ cmd: 'user_verification'})
+  @MessagePattern({ cmd: 'user_verification' })
   async verification(codeDto: CodeDto) {
     return await this.usersService.verification(codeDto);
+  }
+  @MessagePattern({ cmd: 'resend_verification' })
+  async resendVerification(email: string) {
+    return await this.usersService.resendVerification(email);
   }
 }

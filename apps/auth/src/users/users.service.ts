@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { CodeDto, CreateUserDto, LoginDto, TokenDto } from './dto/user.dto';
 import { RpcException } from '@nestjs/microservices';
-import * as bcrypt from 'bcrypt';
+import { hashSync, genSaltSync, compareSync } from 'bcrypt';
 import { UserRepository } from './repository/user.repository';
 import { TokenRepository } from './repository/token.repository';
 import * as moment from 'moment';
@@ -24,15 +24,17 @@ export class UsersService {
   ) {}
 
   async signup(dto: CreateUserDto) {
-    const existing = await this.userRepo.findByEmail(dto.email);
-    console.log("pass",existing)
+    let { email, password } = dto;
+    const existing = await this.userRepo.findByEmail(email);
     if (existing) {
-    throw new RpcException({ message: 'Email already exists', statusCode: HttpStatus.CONFLICT });
-  
+      throw new RpcException({
+        message: 'Email already exists',
+        statusCode: HttpStatus.CONFLICT,
+      });
     }
 
-    const hash = await bcrypt.hash(dto.password, 10);
-    const user = await this.userRepo.createUser(dto.email, hash);
+    password = hashSync(password, genSaltSync());
+    const user = await this.userRepo.createUser(email, password);
 
     let token = await this.createToken({
       userId: user.id,
@@ -58,25 +60,27 @@ export class UsersService {
     };
   }
 
-
-    async verification(codeDto: CodeDto) {
+  async verification(codeDto: CodeDto) {
     const { code } = codeDto;
     const findUser = await this.tokenRepo.findTokenByCode(code);
 
     if (!findUser) {
-      throw new BadRequestException('Verification Code is not Found');
+      throw new RpcException({
+        message: 'Verification Code is not Found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
     }
 
     if (moment().isAfter(findUser?.expiresAt)) {
       await this.tokenRepo.deleteTokenCode(code);
 
-      throw new HttpException(
-        'Code has expired, please request another.',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new RpcException({
+        message: 'Code has expired, please request another.',
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
     }
 
-    const verifyUser = await this.userRepo.updateUser(findUser?.email, {
+    const verifyUser = await this.userRepo.updateUser(findUser?.userId, {
       isActive: true,
       status: Status.ACTIVE,
     });
@@ -88,6 +92,31 @@ export class UsersService {
     return {
       message: 'User verified successfully',
       user,
+    };
+  }
+
+  async resendVerification(email: string) {
+    const user = await this.userRepo.findByEmail(email);
+    if (!user) {
+      throw new RpcException({
+        message: 'User not Found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    const findUser = await this.tokenRepo.findByEmail(email);
+
+    if (email) {
+      await this.tokenRepo.deleteTokenI(findUser.email);
+    }
+
+    let token = await this.createToken({
+      userId: user.id,
+      email: user.email,
+    });
+
+    return {
+      token: token.code,
     };
   }
 
@@ -106,8 +135,15 @@ export class UsersService {
   }
 
   async login(dto: LoginDto) {
-    const user = await this.userRepo.findByEmail(dto.email);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+    const { email, password } = dto;
+
+    const user = await this.userRepo.findByEmail(email);
+    if (!user) {
+      throw new RpcException({
+        message: 'User not Found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
 
     const inactiveStatuses = [Status.PENDING, Status.SUSPENDED];
 
@@ -117,11 +153,15 @@ export class UsersService {
         [Status.SUSPENDED]: 'Your account has been suspended',
       };
 
-// Final clean version
-throw new RpcException(new BadRequestException('Please verify your email'));    }
+      // Final clean version
+      throw new RpcException({
+        message: messages[user.status],
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
+    }
 
-    const isMatch = await bcrypt.compare(dto.password, user.password);
-    if (!isMatch) throw new UnauthorizedException('Invalid credentials');
+    const isMatch = await compareSync(password, user?.password);
+    if (!isMatch) throw new RpcException('Invalid credentials');
 
     return {
       userId: user.id,

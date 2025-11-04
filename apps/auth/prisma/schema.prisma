@@ -43,8 +43,11 @@ model User {
   role      Role     @default(USER)
   password  String
   isActive  Boolean  @default(false)
+  team      String? 
   createdAt DateTime @default(now())
   tokens    Token[]  
 
   @@index([email])
+  @@map("users")
+
 }

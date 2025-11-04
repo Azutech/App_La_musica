@@ -1,31 +1,42 @@
-// src/common/filters/rpc-exception.filter.ts
+// gateway/src/common/filters/rpc-to-http.filter.ts
 import {
   Catch,
+  RpcExceptionFilter,
   ArgumentsHost,
-  HttpException,
   HttpStatus,
-  ExceptionFilter,
 } from '@nestjs/common';
+import { Observable, throwError } from 'rxjs';
 import { RpcException } from '@nestjs/microservices';
 
 @Catch(RpcException)
-export class RpcExceptionFilter implements ExceptionFilter {
-  catch(exception: RpcException, host: ArgumentsHost) {
+export class RpcToHttpExceptionFilter
+  implements RpcExceptionFilter<RpcException>
+{
+  catch(exception: RpcException, host: ArgumentsHost): Observable<any> {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
-    const error = exception.getError();
 
-    const message =
-      typeof error === 'string' ? error : error['message'] || 'Internal error';
-    const status =
-      typeof error === 'object' && error['statusCode']
-        ? error['statusCode']
-        : HttpStatus.BAD_REQUEST;
+    const rpcError = exception.getError();
 
-    response.status(status).json({
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = 'Internal server error';
+
+    if (typeof rpcError === 'object' && rpcError !== null) {
+      status = rpcError['statusCode'] || rpcError['status'] || status;
+      message = rpcError['message'] || message;
+    } else if (typeof rpcError === 'string') {
+      message = rpcError;
+    }
+
+    const responseBody = {
       statusCode: status,
       message,
       timestamp: new Date().toISOString(),
-    });
+    };
+
+    response.status(status).json(responseBody);
+
+    // Return Observable to satisfy interface
+    return throwError(() => responseBody);
   }
 }

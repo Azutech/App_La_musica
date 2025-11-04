@@ -14,14 +14,12 @@ export class AuthService {
 
   async signup(createUserDto: CreateUserDto) {
     try {
-      console.log('Gateway: Sending signup', createUserDto);
       const result = await firstValueFrom(
         this.authClient
-          .send({ cmd: 'auth_signup' }, { createUserDto })
+          .send({ cmd: 'auth_signup' }, createUserDto)
           .pipe(timeout(10_000)), // 10 s guard
       );
 
-      console.log('Gateway: Received', result);
       // 2. Extract user from microservice response
       const user = result.user; // { id, email }
 
@@ -34,7 +32,7 @@ export class AuthService {
 
       return {
         auth: token,
-        message: 'sign up successful',
+        message: 'sign in successful',
       };
     } catch (err: any) {
       // Nest already turned RPC exceptions into proper HTTP errors
@@ -57,10 +55,20 @@ export class AuthService {
     try {
       const result = await firstValueFrom(
         this.authClient
-          .send({ cmd: 'login_users' }, { loginDto })
+          .send({ cmd: 'login_users' }, loginDto)
           .pipe(timeout(10_000)), // 10 s guard
       );
-      return result;
+
+      const authTokenParam = {
+        userId: result,
+      };
+
+      const token = this.jwtService.createEncryptedToken(authTokenParam); // ← Standard JWT
+
+      return {
+        auth: token,
+        message: 'sign up successful',
+      };
     } catch (err: any) {
       // Nest already turned RPC exceptions into proper HTTP errors
       throw err;
@@ -70,7 +78,7 @@ export class AuthService {
     try {
       const result = await firstValueFrom(
         this.authClient
-          .send({ cmd: 'user_dashboard' }, { userId })
+          .send({ cmd: 'user_dashboard' }, userId)
           .pipe(timeout(10_000)), // 10 s guard
       );
       return result;
@@ -83,7 +91,20 @@ export class AuthService {
     try {
       const result = await firstValueFrom(
         this.authClient
-          .send({ cmd: 'user_verification' }, { codeDto })
+          .send({ cmd: 'user_verification' }, codeDto)
+          .pipe(timeout(10_000)), // 10 s guard
+      );
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
+  async resend_verification(email: string) {
+    try {
+      const result = await firstValueFrom(
+        this.authClient
+          .send({ cmd: 'resend_verification' }, email)
           .pipe(timeout(10_000)), // 10 s guard
       );
       return result;

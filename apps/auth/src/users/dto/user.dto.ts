@@ -13,7 +13,6 @@ export class TokenDto {
   expiresAt: Date;
 }
 
-
 export class CodeDto {
   code: number;
 }
