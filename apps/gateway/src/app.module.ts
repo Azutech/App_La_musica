@@ -8,15 +8,19 @@ import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-        ConfigModule.forRoot({
+    ConfigModule.forRoot({
       isGlobal: true, // <-- this makes ConfigService available everywhere
       envFilePath: '.env', // optional, defaults to process.env
     }),
-    AuthModule],
+    AuthModule,
+  ],
   controllers: [AppController],
-  providers: [AppService, {
+  providers: [
+    AppService,
+    {
       provide: APP_FILTER,
       useClass: AllRpcExceptionsFilter,
-    },],
+    },
+  ],
 })
 export class AppModule {}
