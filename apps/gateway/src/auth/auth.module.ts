@@ -3,9 +3,11 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CustomJwtModule } from 'src/guards/jwt/jwt.module';
 
 @Module({
   imports: [
+    CustomJwtModule,
     ConfigModule,
     ClientsModule.registerAsync([
       {
@@ -15,12 +17,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         useFactory: (configService: ConfigService) => ({
           transport: Transport.REDIS,
           options: {
-             host: configService.get<string>('REDIS_HOST'),
+            host: configService.get<string>('REDIS_HOST'),
             port: configService.get<number>('REDIS_PORT'),
             username: configService.get<string>('REDIS_USERNAME'),
             password: configService.get<string>('REDIS_PASSWORD'),
-            // tls: {},  // ← Redis Cloud requires this
-
           },
         }),
       },

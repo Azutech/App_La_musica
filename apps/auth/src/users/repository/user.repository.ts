@@ -13,18 +13,30 @@ export class UserRepository {
   }
 
   async findByEmail(email: string): Promise<User | null> {
+    return this.prisma.user.findFirst({
+      where: { email },
+    });
+  }
+  async findEmail(email: string): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: { email },
     });
   }
 
-  async findAll() : Promise<User[]> {
-    return this.prisma.user.findMany()
+  async findAll(): Promise<User[]> {
+    return this.prisma.user.findMany();
   }
 
   async findById(id: string): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: { id },
+    });
+  }
+
+  async updateUser(id: string, data: any): Promise<User> {
+    return this.prisma.user.update({
+      where: { id },
+      data,
     });
   }
 }
