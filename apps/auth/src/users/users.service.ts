@@ -24,13 +24,14 @@ export class UsersService {
     const hash = await bcrypt.hash(dto.password, 10);
     const user = await this.userRepo.createUser(dto.email, hash);
 
-    await this.createToken({
+    let token = await this.createToken({
       userId: user.id,
       email: user.email,
     });
 
     return {
       user,
+      token: token.code
     };
   }
 
