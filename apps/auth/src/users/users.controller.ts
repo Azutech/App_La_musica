@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern , Payload} from '@nestjs/microservices';
 import { UsersService } from './users.service';
 import { CodeDto, CreateUserDto, LoginDto } from './dto/user.dto';
 
@@ -27,9 +27,10 @@ export class UsersController {
   async login(loginDto: LoginDto) {
     return await this.usersService.login(loginDto);
   }
-  @MessagePattern({ cmd: 'user_dashboard' })
-  async dashboard(userId: string) {
-    return await this.usersService.dashboard(userId);
+@MessagePattern({ cmd: 'user_dashboard' })
+  async dashboard(@Payload() payload: { userId: string }) {
+    const { userId } = payload;
+    return this.usersService.dashboard(userId); // ← now a string
   }
   @MessagePattern({ cmd: 'user_verification' })
   async verification(codeDto: CodeDto) {

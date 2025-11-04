@@ -40,7 +40,9 @@ export class AuthController {
   @Get('me')
   async dashboard(@Req() req: any, @Res() res: Response) {
     const userId = req.user.userId;
-    return this.authService.user_dashboard(userId);
+    const id = await this.authService.user_dashboard(userId);
+    return res.json(id);
+
   }
 
   @Put('verification')

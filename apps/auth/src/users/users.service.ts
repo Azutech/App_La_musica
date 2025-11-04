@@ -14,7 +14,6 @@ import { UserRepository } from './repository/user.repository';
 import { TokenRepository } from './repository/token.repository';
 import * as moment from 'moment';
 import { Status } from './utils/enum/util.enum';
-import { console } from 'inspector';
 
 @Injectable()
 export class UsersService {
@@ -120,8 +119,8 @@ export class UsersService {
     };
   }
 
-  async dashboard(id: string) {
-    const user = await this.userRepo.findById(id);
+  async dashboard(userId: string) {
+    const user = await this.userRepo.findById(userId);
 
     if (!user) {
       throw new NotFoundException('User not found');

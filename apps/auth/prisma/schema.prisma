@@ -10,7 +10,7 @@ datasource db {
 
 
 enum Role {
-  USER
+  LISTENER
   ARTIST
   ADMIN
 }
@@ -40,7 +40,7 @@ model User {
   firstName String?  
   lastName  String?  
   status    Status   @default(pending)
-  role      Role     @default(USER)
+  role      Role     @default(LISTENER)
   password  String
   isActive  Boolean  @default(false)
   team      String? 
