@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Artist {
+  id          String   @id @default(uuid())
+  userId      String   @unique  // Link to User (one-to-one)
+  stageName   String   @unique  // e.g., "The Weeknd"
+  realName    String?  // Optional real name
+  bio         String?  // Artist bio
+  genre       String?  // e.g., "R&B, Pop"
+  followers   Int      @default(0)
+  profileImage String? // URL to image
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([stageName])
+  @@index([genre])
+}
+
+model ArtistApplication {
+  id        String   @id @default(uuid())
+  userId    String
+  stageName String
+  genre     String?
+  bio       String?
+  status    ApplicationStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}

@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { LoggingInterceptor } from './common/filters/logging.interceptor';
+import { ArtistModule } from './artist/artist.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { LoggingInterceptor } from './common/filters/logging.interceptor';
       envFilePath: '.env', // optional, defaults to process.env
     }),
     AuthModule,
+    ArtistModule,
   ],
   controllers: [AppController],
   providers: [
