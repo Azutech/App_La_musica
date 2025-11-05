@@ -10,23 +10,25 @@ export class ArtistApplicationRepository {
 
   async createUser(app: ApplicationI): Promise<ArtistApplication> {
     return this.prisma.artistApplication.create({
-      data: { userId: app.userId, stageName: app.stageName, bio: app.bio, genre: app.genre  },
+      data: {
+        userId: app.userId,
+        stageName: app.stageName,
+        bio: app.bio,
+        genre: app.genre,
+      },
     });
   }
 
-
   async findUserAppsId(
-  userId: string | { userId: string },
-  status?: ApplicationStatus,
-): Promise<ArtistApplication | null> {
+    userId: string | { userId: string },
+    status?: ApplicationStatus,
+  ): Promise<ArtistApplication | null> {
+    const where: any = { userId };
 
-  const where: any = { userId };
+    if (status) {
+      where.status = status;
+    }
 
-  if (status) {
-    where.status = status;
+    return this.prisma.artistApplication.findFirst({ where });
   }
-
-  return this.prisma.artistApplication.findFirst({ where });
-}
-
 }

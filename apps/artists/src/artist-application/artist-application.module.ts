@@ -6,6 +6,10 @@ import { PrismaService } from 'prisma/prisma.service';
 
 @Module({
   controllers: [ArtistApplicationController],
-  providers: [ArtistApplicationService, ArtistApplicationRepository, PrismaService],
+  providers: [
+    ArtistApplicationService,
+    ArtistApplicationRepository,
+    PrismaService,
+  ],
 })
 export class ArtistApplicationModule {}
