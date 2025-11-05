@@ -19,9 +19,6 @@ export class ArtistApplicationRepository {
   userId: string | { userId: string },
   status?: ApplicationStatus,
 ): Promise<ArtistApplication | null> {
-  const actualUserId = typeof userId === 'object' ? userId.userId : userId;
-
-  console.log('findUserAppsId called with userId:', actualUserId, 'and status:', status);
 
   const where: any = { userId };
 
