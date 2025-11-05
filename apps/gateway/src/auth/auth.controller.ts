@@ -42,7 +42,6 @@ export class AuthController {
     const userId = req.user.userId;
     const id = await this.authService.user_dashboard(userId);
     return res.json(id);
-
   }
 
   @Put('verification')

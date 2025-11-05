@@ -1,10 +1,6 @@
 import {
   Injectable,
-  UnauthorizedException,
-  ConflictException,
   NotFoundException,
-  BadRequestException,
-  HttpException,
   HttpStatus,
 } from '@nestjs/common';
 import { CodeDto, CreateUserDto, LoginDto, TokenDto } from './dto/user.dto';

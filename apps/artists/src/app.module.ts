@@ -3,14 +3,18 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from 'prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
+import { ArtistApplicationModule } from './artist-application/artist-application.module';
+import { ArtistsModule } from './artists/artists.module';
 
 @Module({
   imports: [
-        ConfigModule.forRoot({
+    ConfigModule.forRoot({
       isGlobal: true, // <-- this makes ConfigService available everywhere
       envFilePath: '.env', // optional, defaults to process.env
     }),
-    PrismaModule
+    PrismaModule,
+    ArtistApplicationModule,
+    ArtistsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

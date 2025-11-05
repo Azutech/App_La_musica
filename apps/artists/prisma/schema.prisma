@@ -30,6 +30,7 @@ model ArtistApplication {
   stageName String
   genre     String?
   bio       String?
+  adminNote String?
   status    ApplicationStatus @default(PENDING)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
