@@ -12,6 +12,6 @@ export class ArtistApplicationController {
 
   @MessagePattern({ cmd: 'artist_apply' })
   async apply(data: ApplyArtistDto) {
-    return this.artistApplicationService.apply(data);
+    return await this.artistApplicationService.apply(data);
   }
 }

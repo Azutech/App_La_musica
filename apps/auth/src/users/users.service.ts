@@ -158,9 +158,7 @@ export class UsersService {
     const isMatch = await compareSync(password, user?.password);
     if (!isMatch) throw new RpcException('Invalid credentials');
 
-    return {
-      userId: user.id,
-    };
+    return user.id
   }
 
   private async createToken(tokenDto: { userId: string; email: string }) {

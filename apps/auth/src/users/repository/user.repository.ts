@@ -29,7 +29,7 @@ export class UserRepository {
 
   async findById(id: string): Promise<User | null> {
     console.log('findById called with id:', id); // ← Add this
-    return this.prisma.user.findUnique({
+    return this.prisma.user.findFirst({
       where: { id },
     });
   }

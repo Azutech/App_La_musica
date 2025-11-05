@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { ArtistApplication } from '@prisma/client';
+import { ArtistApplication, ApplicationStatus } from '@prisma/client';
 import { ApplicationI } from '../interface/application.interface';
-import { ApplicationStatus } from '../enums/enum.util';
+// import { ApplicationStatus } from '../enums/enum.util';
 
 @Injectable()
 export class ArtistApplicationRepository {
@@ -10,20 +10,26 @@ export class ArtistApplicationRepository {
 
   async createUser(app: ApplicationI): Promise<ArtistApplication> {
     return this.prisma.artistApplication.create({
-      data: app,
+      data: { userId: app.userId, stageName: app.stageName, bio: app.bio, genre: app.genre  },
     });
   }
 
+
   async findUserAppsId(
-    userId: string,
-    status?: ApplicationStatus,
-  ): Promise<ArtistApplication | null> {
-    const where: any = { userId };
+  userId: string | { userId: string },
+  status?: ApplicationStatus,
+): Promise<ArtistApplication | null> {
+  const actualUserId = typeof userId === 'object' ? userId.userId : userId;
 
-    if (status) {
-      where.status = status; // Direct assignment
-    }
+  console.log('findUserAppsId called with userId:', actualUserId, 'and status:', status);
 
-    return this.prisma.artistApplication.findFirst({ where });
+  const where: any = { userId };
+
+  if (status) {
+    where.status = status;
   }
+
+  return this.prisma.artistApplication.findFirst({ where });
+}
+
 }
