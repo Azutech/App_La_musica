@@ -59,7 +59,6 @@ model Distributor {
   artists    Artist[] // One distributor -> many artists
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-
   artistApplications ArtistApplication[]
   tokens             Token[]
 }

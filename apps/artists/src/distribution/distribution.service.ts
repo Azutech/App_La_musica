@@ -1,12 +1,15 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { hashSync, genSaltSync, compareSync } from 'bcrypt';
 import { DistributionRepository } from './repository/distribution.repository';
-import { DistributionDto } from './dtos/distribution.dto';
+import { DistributionDto, LoginDto } from './dtos/distribution.dto';
 import { RpcException } from '@nestjs/microservices';
+import { Status } from './enum/enum.utils';
+import * as moment from 'moment';
+import { TokenRepository } from './repository/token.repository';
 
 @Injectable()
 export class DistributionService {
-  constructor(private distributionRepository: DistributionRepository) {}
+  constructor(private distributionRepository: DistributionRepository, private tokenRepo: TokenRepository) {}
 
 async addDistributor(distributorData: DistributionDto) {
   let { name, email, password, website } = distributorData;
@@ -31,8 +34,79 @@ async addDistributor(distributorData: DistributionDto) {
     website: website,
   });
 
-  return createdDistributor;
+    let token = await this.createToken({
+      distributorId: createdDistributor.id,
+      email: createdDistributor.email,
+    });
+
+  return {createdDistributor, token};
 }
+
+
+  async dashboard(distributorId: string) {
+    const user = await this.distributionRepository.findOne(distributorId);
+
+    if (!user) {
+      throw new RpcException({message : 'Distributor not found', statusCode: HttpStatus.NOT_FOUND  });
+    }
+
+    const { password, ...safeUser } = user;
+
+    return {
+      user: safeUser,
+    };
+  }
+
+  async login(dto: LoginDto) {
+    const { email, password } = dto;
+
+    const user = await this.distributionRepository.findEmail(email);
+    if (!user) {
+      throw new RpcException({
+        message: 'User not Found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    const inactiveStatuses = [Status.PENDING, Status.SUSPENDED];
+
+    if (inactiveStatuses.includes(user?.status as Status)) {
+      const messages = {
+        [Status.PENDING]: 'Please verify your email before logging in',
+        [Status.SUSPENDED]: 'Your account has been suspended',
+      };
+
+      // Final clean version
+      throw new RpcException({
+        message: messages[user.status],
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
+    }
+
+    const isMatch = await compareSync(password, user?.password);
+    if (!isMatch) throw new RpcException('Invalid credentials');
+
+    return user.id
+  }
+
+    private async createToken(tokenDto: { distributorId: string; email: string }) {
+    const { distributorId, email } = tokenDto;
+
+    const code = this.generateRandomNumbers();
+    const expiresAt = moment().add(15, 'minutes').toDate();
+
+    const token = await this.tokenRepo.createToken(
+      distributorId,
+      email,
+      code,
+      expiresAt,
+    );
+    return token;
+  }
+
+  private generateRandomNumbers(): number {
+    return Math.floor(100000 + Math.random() * 900000); // 6-digit
+  }
 
 private validateWorkEmail(email: string): void {
   // Check if email exists and is not empty
@@ -51,6 +125,9 @@ private validateWorkEmail(email: string): void {
       statusCode: HttpStatus.BAD_REQUEST,
     });
   }
+
+
+  
 
   const freeEmailProviders = [
     'gmail.com',

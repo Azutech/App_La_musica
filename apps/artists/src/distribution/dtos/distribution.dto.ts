@@ -4,3 +4,9 @@ export class DistributionDto {
   password: string;
   website: string;
 }
+
+
+export class LoginDto {
+  email: string;
+  password: string;
+}
