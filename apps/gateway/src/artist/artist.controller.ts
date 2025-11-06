@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ArtistService } from './artist.service';
 import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
-import { ApplyArtistDto } from './dto/artist.dto';
+import { ApplyArtistDto, DistributionDto } from './dto/artist.dto';
 import { Response } from 'express';
 
 @Controller('artist')
@@ -15,5 +15,10 @@ export class ArtistController {
     const id = await this.artistService.applyArtist(applyArtistDto);
     return res.json(id);
 
+  }
+  @Post('add-distributor')
+  async addDistributor(@Body() distributionDto: DistributionDto, @Req() req: any, @Res() res: Response) {
+    const id = await this.artistService.addDistributor(distributionDto  );
+    return res.json(id);
   }
 }

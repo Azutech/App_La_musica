@@ -33,16 +33,20 @@ enum ArtistOriginType {
   DISTRIBUTOR
 }
 
+
+
 model ArtistApplication {
-  id        String   @id @default(uuid())
-  userId    String
-  stageName String
-  genre     String?
-  bio       String?
-  adminNote String?
-  status    ApplicationStatus @default(PENDING)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(uuid())
+  userId        String
+  stageName     String
+  genre         String?
+  bio           String?
+  adminNote     String?
+  distributorId String?                           // optional
+  distributor   Distributor? @relation(fields: [distributorId], references: [id], onDelete: SetNull)
+  status        ApplicationStatus @default(PENDING)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Distributor {
@@ -51,13 +55,35 @@ model Distributor {
   email      String   @unique
   password   String
   website    String?
+  status     Status   @default(PENDING)
   artists    Artist[] // One distributor -> many artists
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  artistApplications ArtistApplication[]
+  tokens             Token[]
+}
+
+enum Status {
+  ACTIVE
+  PENDING
+  SUSPENDED
 }
 
 enum ApplicationStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+model Token {
+  id            String   @id @default(uuid())
+  distributorId String?                           // optional
+  distributor   Distributor? @relation(fields: [distributorId], references: [id], onDelete: SetNull)
+  email         String
+  code          Int   
+  expiresAt     DateTime @default(now())
+  createdAt     DateTime @default(now())
+  @@index([distributorId])
+  @@index([email])
 }

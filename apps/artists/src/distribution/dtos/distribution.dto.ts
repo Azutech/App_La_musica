@@ -1,4 +1,4 @@
-export interface DistributionI {
+export class DistributionDto {
   name: string;
   email: string;
   password: string;

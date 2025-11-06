@@ -1,14 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { Distributor } from '@prisma/client';
-
+import { DistributionI } from '../interface/distribution.interface';
 
 @Injectable()
 export class DistributionRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(distributorData: Distributor): Promise<Distributor> {
-    return this.prisma.distributor.create({ data: distributorData });
+  async create(distributorData: DistributionI): Promise<Distributor> {
+    return this.prisma.distributor.create({
+      data: {
+        name: distributorData.name,
+        email: distributorData.email,
+        password: distributorData.password,
+        website: distributorData.website,
+      },
+    });
   }
 
   async findAll(): Promise<Distributor[]> {
@@ -16,7 +23,10 @@ export class DistributionRepository {
   }
 
   async findOne(id: string): Promise<Distributor | null> {
-    return this.prisma.distributor.findUnique({ where: { id } });
+    return await this.prisma.distributor.findFirst({ where: { id } });
+  }
+  async findEmail(email: string): Promise<Distributor | null> {
+    return await this.prisma.distributor.findFirst({ where: { email } });
   }
 
   async update(id: string, distributorData: Distributor): Promise<Distributor> {
