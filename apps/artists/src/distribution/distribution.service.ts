@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { hashSync, genSaltSync, compareSync } from 'bcrypt';
 import { DistributionRepository } from './repository/distribution.repository';
-import { DistributionDto, LoginDto } from './dtos/distribution.dto';
+import { CodeDto, DistributionDto, LoginDto } from './dtos/distribution.dto';
 import { RpcException } from '@nestjs/microservices';
 import { Status } from './enum/enum.utils';
 import * as moment from 'moment';
@@ -9,45 +9,51 @@ import { TokenRepository } from './repository/token.repository';
 
 @Injectable()
 export class DistributionService {
-  constructor(private distributionRepository: DistributionRepository, private tokenRepo: TokenRepository) {}
+  constructor(
+    private distributionRepository: DistributionRepository,
+    private tokenRepo: TokenRepository,
+  ) {}
 
-async addDistributor(distributorData: DistributionDto) {
-  let { name, email, password, website } = distributorData;
+  async addDistributor(distributorData: DistributionDto) {
+    let { name, email, password, website } = distributorData;
 
-  // Validate work email
-  this.validateWorkEmail(email);
+    // Validate work email
+    this.validateWorkEmail(email);
 
-  const existingDistributor = await this.distributionRepository.findEmail(email);
-  if (existingDistributor) {
-    throw new RpcException({
-      message: 'Distributor with this email already exists',
-      statusCode: HttpStatus.CONFLICT,
+    const existingDistributor =
+      await this.distributionRepository.findEmail(email);
+    if (existingDistributor) {
+      throw new RpcException({
+        message: 'Distributor with this email already exists',
+        statusCode: HttpStatus.CONFLICT,
+      });
+    }
+
+    password = hashSync(password, genSaltSync());
+
+    const createdDistributor = await this.distributionRepository.create({
+      name: name,
+      email: email,
+      password: password,
+      website: website,
     });
-  }
-
-  password = hashSync(password, genSaltSync());
-
-  const createdDistributor = await this.distributionRepository.create({
-    name: name,
-    email: email,
-    password: password,
-    website: website,
-  });
 
     let token = await this.createToken({
       distributorId: createdDistributor.id,
       email: createdDistributor.email,
     });
 
-  return {createdDistributor, token};
-}
-
+    return { createdDistributor, token };
+  }
 
   async dashboard(distributorId: string) {
     const user = await this.distributionRepository.findOne(distributorId);
 
     if (!user) {
-      throw new RpcException({message : 'Distributor not found', statusCode: HttpStatus.NOT_FOUND  });
+      throw new RpcException({
+        message: 'Distributor not found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
     }
 
     const { password, ...safeUser } = user;
@@ -86,10 +92,73 @@ async addDistributor(distributorData: DistributionDto) {
     const isMatch = await compareSync(password, user?.password);
     if (!isMatch) throw new RpcException('Invalid credentials');
 
-    return user.id
+    return user.id;
   }
 
-    private async createToken(tokenDto: { distributorId: string; email: string }) {
+    async verification(codeDto: CodeDto) {
+    const { code } = codeDto;
+    const findUser = await this.tokenRepo.findTokenByCode(code);
+
+    if (!findUser) {
+      throw new RpcException({
+        message: 'Verification Code is not Found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    if (moment().isAfter(findUser?.expiresAt)) {
+      await this.tokenRepo.deleteTokenCode(code);
+
+      throw new RpcException({
+        message: 'Code has expired, please request another.',
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
+    }
+
+    const verifyUser = await this.distributionRepository.update(findUser?.distributorId, {
+      isActive: true,
+      status: Status.ACTIVE,
+    });
+
+    await this.tokenRepo.deleteTokenCode(code);
+
+    const { password, ...user } = verifyUser;
+
+    return {
+      message: 'User verified successfully',
+      user,
+    };
+  }
+
+  async resendVerification(email: string) {
+    const distro = await this.distributionRepository.findEmail(email);
+    if (!distro) {
+      throw new RpcException({
+        message: 'Distributor not Found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    const findUser = await this.tokenRepo.findByEmail(email);
+
+    if (email) {
+      await this.tokenRepo.deleteTokenI(findUser.email);
+    }
+
+    let token = await this.createToken({
+      distributorId: distro.id,
+      email: distro.email,
+    });
+
+    return {
+      token: token.code,
+    };
+  }
+
+  private async createToken(tokenDto: {
+    distributorId: string;
+    email: string;
+  }) {
     const { distributorId, email } = tokenDto;
 
     const code = this.generateRandomNumbers();
@@ -108,59 +177,57 @@ async addDistributor(distributorData: DistributionDto) {
     return Math.floor(100000 + Math.random() * 900000); // 6-digit
   }
 
-private validateWorkEmail(email: string): void {
-  // Check if email exists and is not empty
-  if (!email || email.trim() === '') {
-    throw new RpcException({
-      message: 'Email is required',
-      statusCode: HttpStatus.BAD_REQUEST,
-    });
+  private validateWorkEmail(email: string): void {
+    // Check if email exists and is not empty
+    if (!email || email.trim() === '') {
+      throw new RpcException({
+        message: 'Email is required',
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      throw new RpcException({
+        message: 'Invalid email format',
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
+    }
+
+    const freeEmailProviders = [
+      'gmail.com',
+      'yahoo.com',
+      'hotmail.com',
+      'outlook.com',
+      'aol.com',
+      'icloud.com',
+      'mail.com',
+      'protonmail.com',
+      'zoho.com',
+      'yandex.com',
+      'gmx.com',
+      'inbox.com',
+      'live.com',
+      'msn.com',
+    ];
+
+    const emailDomain = email.toLowerCase().split('@')[1];
+
+    // Check if domain exists
+    if (!emailDomain) {
+      throw new RpcException({
+        message: 'Invalid email format',
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
+    }
+
+    if (freeEmailProviders.includes(emailDomain)) {
+      throw new RpcException({
+        message:
+          'Please use a work email address. Personal email providers are not allowed.',
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
+    }
   }
-
-  // Validate email format
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    throw new RpcException({
-      message: 'Invalid email format',
-      statusCode: HttpStatus.BAD_REQUEST,
-    });
-  }
-
-
-  
-
-  const freeEmailProviders = [
-    'gmail.com',
-    'yahoo.com',
-    'hotmail.com',
-    'outlook.com',
-    'aol.com',
-    'icloud.com',
-    'mail.com',
-    'protonmail.com',
-    'zoho.com',
-    'yandex.com',
-    'gmx.com',
-    'inbox.com',
-    'live.com',
-    'msn.com',
-  ];
-
-  const emailDomain = email.toLowerCase().split('@')[1];
-
-  // Check if domain exists
-  if (!emailDomain) {
-    throw new RpcException({
-      message: 'Invalid email format',
-      statusCode: HttpStatus.BAD_REQUEST,
-    });
-  }
-
-  if (freeEmailProviders.includes(emailDomain)) {
-    throw new RpcException({
-      message: 'Please use a work email address. Personal email providers are not allowed.',
-      statusCode: HttpStatus.BAD_REQUEST,
-    });
-  }
-}
 }
