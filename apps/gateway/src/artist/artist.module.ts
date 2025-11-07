@@ -4,6 +4,7 @@ import { ArtistController } from './artist.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { CustomJwtModule } from 'src/guards/jwt/jwt.module';
+import { RedisClientService } from 'src/shared/redis-client.service';
 
 @Module({
   imports: [
@@ -28,6 +29,10 @@ import { CustomJwtModule } from 'src/guards/jwt/jwt.module';
     ]),
   ],
   controllers: [ArtistController],
-  providers: [ArtistService],
+  providers: [ArtistService, {
+        provide: RedisClientService,
+        inject: ['ARTIST_SERVICE'],
+        useFactory: (artistClient) => new RedisClientService(artistClient),
+      },],
 })
 export class ArtistModule {}
