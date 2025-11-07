@@ -4,32 +4,19 @@ import { firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
 import { JwtService } from 'src/guards/jwt/jwt.service';
 import { ApplyArtistDto, CodeDto, DistributionDto, LoginDto } from './dto/artist.dto';
-import { console } from 'inspector';
 @Injectable()
 export class DistributorService {
   constructor(
-    @Inject('DISTRIBUTOR_SERVICE') private readonly authClient: ClientProxy,
+    @Inject('DISTRIBUTOR_SERVICE') private readonly distroClient: ClientProxy,
     // private readonly jwtService: JwtService,
   ) {}
 
-  async applyArtist(applyArtistDto: ApplyArtistDto) {
-    try {
-      const result = await firstValueFrom(
-        this.authClient
-          .send({ cmd: 'artist_apply' }, applyArtistDto)
-          .pipe(timeout(20000)), // 10 s guard
-      );
-      return result;
-    } catch (err: any) {
-      // Nest already turned RPC exceptions into proper HTTP errors
-      throw err;
-    }
-  }
+
   async addDistributor(distributionDto: DistributionDto) {
     try {
 
       const result = await firstValueFrom(
-        this.authClient
+        this.distroClient
           .send({ cmd: 'add_distributor' }, distributionDto)
           .pipe(timeout(20000)), // 10 s guard
       );
@@ -44,7 +31,7 @@ export class DistributorService {
     try {
 
       const result = await firstValueFrom(
-        this.authClient
+        this.distroClient
           .send({ cmd: 'login_distributor' }, loginDto)
           .pipe(timeout(20000)), // 10 s guard
       );
@@ -59,7 +46,7 @@ export class DistributorService {
     try {
 
       const result = await firstValueFrom(
-        this.authClient
+        this.distroClient
           .send({ cmd: 'verify_distributor' }, loginDto)
           .pipe(timeout(20000)), // 10 s guard
       );
@@ -74,7 +61,7 @@ export class DistributorService {
     try {
 
       const result = await firstValueFrom(
-        this.authClient
+        this.distroClient
           .send({ cmd: 'resend_verification' }, email)
           .pipe(timeout(20000)), // 10 s guard
       );
@@ -90,7 +77,7 @@ export class DistributorService {
     try {
 
       const result = await firstValueFrom(
-        this.authClient
+        this.distroClient
           .send({ cmd: 'distributor_dashboard' }, { distributorId })
           .pipe(timeout(20000)), // 10 s guard
       );

@@ -9,14 +9,7 @@ import { CodeDto } from 'src/apis/auth/dtos/auth.dto';
 export class ArtistController {
   constructor(private readonly distributorService: DistributorService) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Post('apply')
-  async applyForArtist(@Body() applyArtistDto: ApplyArtistDto, @Req() req: any, @Res() res: Response) {
-      applyArtistDto.userId = req.user.userId;
-    const id = await this.distributorService.applyArtist(applyArtistDto);
-    return res.status(HttpStatus.CREATED).json({message: 'Application submitted', applicationId: id});
 
-  }
   @Post('add-distributor')
   async addDistributor(@Body() distributionDto: DistributionDto, @Req() req: any, @Res() res: Response) {
     const id = await this.distributorService.addDistributor(distributionDto  );

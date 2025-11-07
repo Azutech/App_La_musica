@@ -9,19 +9,25 @@ export class DistributionController {
 
   @MessagePattern({ cmd: 'add_distributor' })
   async addDistributor(distributorData: DistributionDto) {
-    return this.distributionService.addDistributor(distributorData);
+    return await this.distributionService.addDistributor(distributorData);
   }
 
   @MessagePattern({ cmd: 'login_distributor' })
   async loginDistributor(loginData: LoginDto) {
-    return this.distributionService.login(loginData);
+    return await this.distributionService.login(loginData);
   }
   @MessagePattern({ cmd: 'verify_distributor' })
   async verifyDistributor(loginData: CodeDto) {
-    return this.distributionService.verification(loginData);
+    return await this.distributionService.verification(loginData);
   }
   @MessagePattern({ cmd: 'resend_verification' })
-  async resendVerification(email: string) {
-    return this.distributionService.resendVerification(email);
-  }
+    async resendVerification(email: string) {
+      return await this.distributionService.resendVerification(email);
+    }
+
+  @MessagePattern({ cmd: 'distributor_dashboard' })
+  async getDistributor(id: string) {
+    return await this.distributionService.dashboard(id);
+  } 
+
 }
