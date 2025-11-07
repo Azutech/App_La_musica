@@ -16,6 +16,7 @@ import { ArtistModule } from './artist/artist.module';
     }),
     AuthModule,
     ArtistModule,
+ 
   ],
   controllers: [AppController],
   providers: [
