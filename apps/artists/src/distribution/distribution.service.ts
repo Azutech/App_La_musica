@@ -43,7 +43,7 @@ export class DistributionService {
       email: createdDistributor.email,
     });
 
-    return { createdDistributor, token };
+    return { email: createdDistributor.email, token: token.code };
   }
 
   async dashboard(distributorId: string) {
