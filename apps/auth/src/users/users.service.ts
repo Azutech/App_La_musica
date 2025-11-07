@@ -1,15 +1,18 @@
+import { Injectable, NotFoundException, HttpStatus } from '@nestjs/common';
 import {
-  Injectable,
-  NotFoundException,
-  HttpStatus,
-} from '@nestjs/common';
-import { CodeDto, CreateUserDto, LoginDto, TokenDto } from './dto/user.dto';
+  CodeDto,
+  CreateUserDto,
+  LoginDto,
+  OnboardUserDto,
+  TokenDto,
+} from './dto/user.dto';
 import { RpcException } from '@nestjs/microservices';
-import { hashSync, genSaltSync, compareSync } from 'bcrypt';
+import { hashSync, genSaltSync, compareSync, hash } from 'bcrypt';
 import { UserRepository } from './repository/user.repository';
 import { TokenRepository } from './repository/token.repository';
 import * as moment from 'moment';
 import { Status } from './utils/enum/util.enum';
+import { generateSecureCode, getExpiresAt } from 'src/common/utils/token.utils';
 
 @Injectable()
 export class UsersService {
@@ -28,8 +31,8 @@ export class UsersService {
       });
     }
 
-    password = hashSync(password, genSaltSync());
-    const user = await this.userRepo.createUser(email, password);
+    const hashed = await hash(password, 8); // async
+    const user = await this.userRepo.createUser(email, hashed);
 
     let token = await this.createToken({
       userId: user.id,
@@ -87,6 +90,27 @@ export class UsersService {
     return {
       message: 'User verified successfully',
       user,
+    };
+  }
+
+  async onboardUser(OnboardUserDto: OnboardUserDto) {
+    const { firstName, lastName, userId } = OnboardUserDto;
+
+    const user = await this.userRepo.findById(userId);
+    if (!user) {
+      throw new RpcException({
+        message: 'User not found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    await this.userRepo.updateUser(userId, {
+      firstName,
+      lastName,
+    });
+
+    return {
+      message: 'User onboarded successfully',
     };
   }
 
@@ -158,14 +182,14 @@ export class UsersService {
     const isMatch = await compareSync(password, user?.password);
     if (!isMatch) throw new RpcException('Invalid credentials');
 
-    return user.id
+    return user.id;
   }
 
   private async createToken(tokenDto: { userId: string; email: string }) {
     const { userId, email } = tokenDto;
 
-    const code = this.generateRandomNumbers();
-    const expiresAt = moment().add(15, 'minutes').toDate();
+    const code = generateSecureCode();
+    const expiresAt = getExpiresAt();
 
     const token = await this.tokenRepo.createToken(
       userId,
