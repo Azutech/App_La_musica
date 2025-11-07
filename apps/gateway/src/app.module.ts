@@ -7,6 +7,7 @@ import { AuthModule } from './apis/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { LoggingInterceptor } from './common/filters/logging.interceptor';
 import { DistributorModule } from './apis/distributors/distributors.module';
+import { ArtistModule } from './apis/artist/artist.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { DistributorModule } from './apis/distributors/distributors.module';
     }),
     AuthModule,
     DistributorModule,
+    ArtistModule,
  
   ],
   controllers: [AppController],
