@@ -21,7 +21,7 @@ export class DistributionController {
     return this.distributionService.verification(loginData);
   }
   @MessagePattern({ cmd: 'resend_verification' })
-  async resendVerification(email: string ) {
+  async resendVerification(email: string) {
     return this.distributionService.resendVerification(email);
   }
 }

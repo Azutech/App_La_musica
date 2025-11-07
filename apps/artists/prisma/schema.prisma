@@ -20,7 +20,7 @@ model Artist {
   genre         String?
   followers     Int               @default(0)
   profileImage  String?
-  originType    ArtistOriginType  @default(INDEPENDENT)
+  originType    ArtistOriginType  @default(independent)
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
 
@@ -29,8 +29,8 @@ model Artist {
 }
 
 enum ArtistOriginType {
-  INDEPENDENT
-  DISTRIBUTOR
+  independent
+  distributor
 }
 
 
@@ -44,7 +44,7 @@ model ArtistApplication {
   adminNote     String?
   distributorId String?                           // optional
   distributor   Distributor? @relation(fields: [distributorId], references: [id], onDelete: SetNull)
-  status        ApplicationStatus @default(PENDING)
+  status        ApplicationStatus @default(pending)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -71,9 +71,9 @@ enum Status {
 }
 
 enum ApplicationStatus {
-  PENDING
-  APPROVED
-  REJECTED
+  pending
+  approved
+  rejected
 }
 
 model Token {

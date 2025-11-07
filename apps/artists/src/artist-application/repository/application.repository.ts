@@ -30,4 +30,33 @@ export class ArtistApplicationRepository {
 
     return this.prisma.artistApplication.findFirst({ where });
   }
+
+  async findAppId(userId: string): Promise<ArtistApplication | null> {
+    return await this.prisma.artistApplication.findFirst({
+      where: { id: userId },
+    });
+  }
+
+  async findDistroId(
+    distributorId: string | { userId: string },
+    status?: ApplicationStatus,
+  ): Promise<ArtistApplication | null> {
+    const where: any = { distributorId };
+
+    if (status) {
+      where.status = status;
+    }
+
+    return this.prisma.artistApplication.findFirst({ where });
+  }
+
+  async updateStatus(
+    applicationId: string,
+    status: ApplicationStatus,
+  ): Promise<ArtistApplication> {
+    return this.prisma.artistApplication.update({
+      where: { id: applicationId },
+      data: { status },
+    });
+  }
 }

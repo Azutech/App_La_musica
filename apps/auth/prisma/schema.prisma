@@ -10,9 +10,9 @@ datasource db {
 
 
 enum Role {
-  LISTENER
-  ARTIST
-  ADMIN
+  listner
+  artist
+  admin
 }
 
 enum Status {
@@ -38,9 +38,10 @@ model User {
   id        String   @id @default(uuid())
   email     String   @unique
   firstName String?  
-  lastName  String?  
+  lastName  String?
+  artistId  String?
   status    Status   @default(pending)
-  role      Role     @default(LISTENER)
+  role      Role     @default(listner)
   password  String
   isActive  Boolean  @default(false)
   team      String? 
