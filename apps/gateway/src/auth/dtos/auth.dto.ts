@@ -9,3 +9,9 @@ export class LoginDto {
 export class CodeDto {
   code: number;
 }
+
+export class OnboardUserDto {
+  readonly firstName: string;
+  readonly lastName: string;
+  userId: string;
+}

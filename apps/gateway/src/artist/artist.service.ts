@@ -17,7 +17,7 @@ export class ArtistService {
       const result = await firstValueFrom(
         this.authClient
           .send({ cmd: 'artist_apply' }, applyArtistDto)
-          .pipe(timeout(10_000)), // 10 s guard
+          .pipe(timeout(20000)), // 10 s guard
       );
       return result;
     } catch (err: any) {
@@ -31,7 +31,7 @@ export class ArtistService {
       const result = await firstValueFrom(
         this.authClient
           .send({ cmd: 'add_distributor' }, distributionDto)
-          .pipe(timeout(10_000)), // 10 s guard
+          .pipe(timeout(20000)), // 10 s guard
       );
 
       return result;
@@ -46,7 +46,7 @@ export class ArtistService {
       const result = await firstValueFrom(
         this.authClient
           .send({ cmd: 'login_distributor' }, loginDto)
-          .pipe(timeout(10_000)), // 10 s guard
+          .pipe(timeout(20000)), // 10 s guard
       );
 
       return result;
@@ -61,7 +61,7 @@ export class ArtistService {
       const result = await firstValueFrom(
         this.authClient
           .send({ cmd: 'verify_distributor' }, loginDto)
-          .pipe(timeout(10_000)), // 10 s guard
+          .pipe(timeout(20000)), // 10 s guard
       );
 
       return result;
@@ -76,7 +76,7 @@ export class ArtistService {
       const result = await firstValueFrom(
         this.authClient
           .send({ cmd: 'resend_verification' }, email)
-          .pipe(timeout(10_000)), // 10 s guard
+          .pipe(timeout(20000)), // 10 s guard
       );
 
       return result;

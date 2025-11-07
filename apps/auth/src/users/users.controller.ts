@@ -49,4 +49,8 @@ export class UsersController {
   async onboardUser(OnboardUserDto: OnboardUserDto) {
     return await this.usersService.onboardUser(OnboardUserDto);
   }
+  @MessagePattern({ cmd: 'update_role' })
+  async updateRole(userId: string) {
+    return await this.usersService.updateRole(userId);
+  }
 }

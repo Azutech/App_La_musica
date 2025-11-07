@@ -7,12 +7,13 @@ import {
   TokenDto,
 } from './dto/user.dto';
 import { RpcException } from '@nestjs/microservices';
-import { hashSync, genSaltSync, compareSync, hash } from 'bcrypt';
+import { compareSync, hash } from 'bcrypt';
 import { UserRepository } from './repository/user.repository';
 import { TokenRepository } from './repository/token.repository';
 import * as moment from 'moment';
 import { Status } from './utils/enum/util.enum';
 import { generateSecureCode, getExpiresAt } from 'src/common/utils/token.utils';
+import { Role } from './utils/enum/util.enum';
 
 @Injectable()
 export class UsersService {
@@ -114,6 +115,25 @@ export class UsersService {
     };
   }
 
+  async updateRole(userId: string) {
+
+    const user = await this.userRepo.findById(userId);
+    if (!user) {
+      throw new RpcException({
+        message: 'User not found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    await this.userRepo.updateUser(userId, {
+      role : Role.ARTIST      
+    });
+
+    return {
+      message: 'User updated to artist successfully',
+    };
+  }
+
   async resendVerification(email: string) {
     const user = await this.userRepo.findByEmail(email);
     if (!user) {
@@ -198,9 +218,5 @@ export class UsersService {
       expiresAt,
     );
     return token;
-  }
-
-  private generateRandomNumbers(): number {
-    return Math.floor(100000 + Math.random() * 900000); // 6-digit
   }
 }
