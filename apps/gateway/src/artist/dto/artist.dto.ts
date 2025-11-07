@@ -12,3 +12,7 @@ export class DistributionDto {
   website: string;
 }
 
+export class LoginDto {
+  email: string;
+  password: string;
+}
