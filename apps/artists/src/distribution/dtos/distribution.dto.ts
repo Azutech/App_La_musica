@@ -12,4 +12,4 @@ export class LoginDto {
 
 export class CodeDto {
   code: number;
-} 
+}

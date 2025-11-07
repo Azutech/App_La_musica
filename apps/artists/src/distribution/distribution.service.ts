@@ -95,7 +95,7 @@ export class DistributionService {
     return user.id;
   }
 
-    async verification(codeDto: CodeDto) {
+  async verification(codeDto: CodeDto) {
     const { code } = codeDto;
     const findUser = await this.tokenRepo.findTokenByCode(code);
 
@@ -115,10 +115,13 @@ export class DistributionService {
       });
     }
 
-    const verifyUser = await this.distributionRepository.update(findUser?.distributorId, {
-      isActive: true,
-      status: Status.ACTIVE,
-    });
+    const verifyUser = await this.distributionRepository.update(
+      findUser?.distributorId,
+      {
+        isActive: true,
+        status: Status.ACTIVE,
+      },
+    );
 
     await this.tokenRepo.deleteTokenCode(code);
 

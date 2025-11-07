@@ -7,6 +7,11 @@ import { TokenRepository } from './repository/token.repository';
 
 @Module({
   controllers: [DistributionController],
-  providers: [DistributionService, PrismaService, DistributionRepository, TokenRepository],
+  providers: [
+    DistributionService,
+    PrismaService,
+    DistributionRepository,
+    TokenRepository,
+  ],
 })
 export class DistributionModule {}

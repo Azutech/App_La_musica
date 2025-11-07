@@ -3,7 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
 import { JwtService } from 'src/guards/jwt/jwt.service';
-import { ApplyArtistDto, DistributionDto, LoginDto } from './dto/artist.dto';
+import { ApplyArtistDto, CodeDto, DistributionDto, LoginDto } from './dto/artist.dto';
 import { console } from 'inspector';
 @Injectable()
 export class ArtistService {
@@ -46,6 +46,21 @@ export class ArtistService {
       const result = await firstValueFrom(
         this.authClient
           .send({ cmd: 'login_distributor' }, loginDto)
+          .pipe(timeout(10_000)), // 10 s guard
+      );
+
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
+  async verifyDistributor(loginDto: CodeDto) {
+    try {
+
+      const result = await firstValueFrom(
+        this.authClient
+          .send({ cmd: 'verify_distributor' }, loginDto)
           .pipe(timeout(10_000)), // 10 s guard
       );
 
