@@ -70,5 +70,21 @@ export class ArtistService {
       throw err;
     }
   }
+  async resendVerification(email: string) {
+    try {
+
+      const result = await firstValueFrom(
+        this.authClient
+          .send({ cmd: 'resend_verification' }, email)
+          .pipe(timeout(10_000)), // 10 s guard
+      );
+
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
+
 }
  
