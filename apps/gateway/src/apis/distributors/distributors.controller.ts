@@ -1,41 +1,41 @@
 import { Body, Controller, HttpStatus, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
-import { ArtistService } from './artist.service';
+import { DistributorService } from './distributors.service';
 import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
 import { ApplyArtistDto, DistributionDto, LoginDto } from './dto/artist.dto';
 import { Response } from 'express';
-import { CodeDto } from 'src/auth/dtos/auth.dto';
+import { CodeDto } from 'src/apis/auth/dtos/auth.dto';
 
 @Controller('artist')
 export class ArtistController {
-  constructor(private readonly artistService: ArtistService) {}
+  constructor(private readonly distributorService: DistributorService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post('apply')
   async applyForArtist(@Body() applyArtistDto: ApplyArtistDto, @Req() req: any, @Res() res: Response) {
       applyArtistDto.userId = req.user.userId;
-    const id = await this.artistService.applyArtist(applyArtistDto);
+    const id = await this.distributorService.applyArtist(applyArtistDto);
     return res.status(HttpStatus.CREATED).json({message: 'Application submitted', applicationId: id});
 
   }
   @Post('add-distributor')
   async addDistributor(@Body() distributionDto: DistributionDto, @Req() req: any, @Res() res: Response) {
-    const id = await this.artistService.addDistributor(distributionDto  );
+    const id = await this.distributorService.addDistributor(distributionDto  );
     return res.status(HttpStatus.CREATED).json({message: 'Distributor registered', applicationId: id});
 
   }
   @Post('login-distributor')
   async loginDistributor(@Body() loginDto: LoginDto, @Req() req: any, @Res() res: Response) {
-    const id = await this.artistService.loginDistributor(loginDto);
+    const id = await this.distributorService.loginDistributor(loginDto);
     return res.json(id);
   }
   @Put('resend-verification')
   async resendVerification(@Query('email') email: string, @Req() req: any, @Res() res: Response) {
-    const id = await this.artistService.resendVerification(email);
+    const id = await this.distributorService.resendVerification(email);
     return res.json(id);
   }
   @Put('verify-distributor')
   async verifyDistributor(@Body() codeDto: CodeDto, @Req() req: any, @Res() res: Response) {
-    const id = await this.artistService.verifyDistributor(codeDto);
+    const id = await this.distributorService.verifyDistributor(codeDto);
     return res.json(id);
   }
 }

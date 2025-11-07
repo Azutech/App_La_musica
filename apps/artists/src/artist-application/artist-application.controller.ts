@@ -27,4 +27,25 @@ export class ArtistApplicationController {
   async getUserApplication(userId: string) {
     return await this.artistApplicationService.getApplicationByUserId(userId);
   }
+
+  @MessagePattern({ cmd: 'artist_approve_application_via_distributor' })
+  async approveArtistApplicationViaDistributor(applicationId: string) {
+    return await this.artistApplicationService.approveArtistApplicationViaDistributor(
+      applicationId,
+    );
+  }
+
+  @MessagePattern({ cmd: 'artist_approve_application_via_user' })
+  async approveArtistApplicationViaUser(applicationId: string) {
+    return await this.artistApplicationService.approveArtistApplicationViaUser(
+      applicationId,
+    );
+  }
+
+  @MessagePattern({ cmd: 'artist_reject_application' })
+  async rejectApplication(applicationId: string) {
+    return await this.artistApplicationService.rejectArtistApplicationViaDistributor(
+      applicationId,
+    );
+  }   
 }

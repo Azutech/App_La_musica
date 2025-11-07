@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ArtistService } from './artist.service';
-import { ArtistController } from './artist.controller';
+import { DistributorService } from './distributors.service';
+import { ArtistController } from './distributors.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { CustomJwtModule } from 'src/guards/jwt/jwt.module';
@@ -12,7 +12,7 @@ import { RedisClientService } from 'src/shared/redis-client.service';
     ConfigModule,
     ClientsModule.registerAsync([
       {
-        name: 'ARTIST_SERVICE',
+        name: 'DISTRIBUTOR_SERVICE',
         imports: [ConfigModule],
         inject: [ConfigService],
         useFactory: (configService: ConfigService) => ({
@@ -29,10 +29,10 @@ import { RedisClientService } from 'src/shared/redis-client.service';
     ]),
   ],
   controllers: [ArtistController],
-  providers: [ArtistService, {
+  providers: [DistributorService, {
         provide: RedisClientService,
-        inject: ['ARTIST_SERVICE'],
-        useFactory: (artistClient) => new RedisClientService(artistClient),
+        inject: ['DISTRIBUTOR_SERVICE'],
+        useFactory: (distroClient) => new RedisClientService(distroClient),
       },],
 })
-export class ArtistModule {}
+export class DistributorModule {}

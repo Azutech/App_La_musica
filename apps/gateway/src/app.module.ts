@@ -3,10 +3,10 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core'; // ← THIS IS THE R
 import { RpcToHttpExceptionFilter } from './common/filters/rpc-exception.filter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './apis/auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { LoggingInterceptor } from './common/filters/logging.interceptor';
-import { ArtistModule } from './artist/artist.module';
+import { DistributorModule } from './apis/distributors/distributors.module';
 
 @Module({
   imports: [
@@ -15,7 +15,7 @@ import { ArtistModule } from './artist/artist.module';
       envFilePath: '.env', // optional, defaults to process.env
     }),
     AuthModule,
-    ArtistModule,
+    DistributorModule,
  
   ],
   controllers: [AppController],

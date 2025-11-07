@@ -6,9 +6,9 @@ import { JwtService } from 'src/guards/jwt/jwt.service';
 import { ApplyArtistDto, CodeDto, DistributionDto, LoginDto } from './dto/artist.dto';
 import { console } from 'inspector';
 @Injectable()
-export class ArtistService {
+export class DistributorService {
   constructor(
-    @Inject('ARTIST_SERVICE') private readonly authClient: ClientProxy,
+    @Inject('DISTRIBUTOR_SERVICE') private readonly authClient: ClientProxy,
     // private readonly jwtService: JwtService,
   ) {}
 
@@ -76,6 +76,22 @@ export class ArtistService {
       const result = await firstValueFrom(
         this.authClient
           .send({ cmd: 'resend_verification' }, email)
+          .pipe(timeout(20000)), // 10 s guard
+      );
+
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
+
+  async dashboard(distributorId: string) {
+    try {
+
+      const result = await firstValueFrom(
+        this.authClient
+          .send({ cmd: 'distributor_dashboard' }, { distributorId })
           .pipe(timeout(20000)), // 10 s guard
       );
 
