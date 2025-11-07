@@ -9,6 +9,7 @@ import {
   Put,
   UseFilters,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
@@ -52,7 +53,7 @@ export class AuthController {
 
   @Put('resend_verification')
   async resend_verification(
-    @Body('email') email: string,
+    @Query('email') email: string,
     @Res() res: Response,
   ) {
     const verification = await this.authService.resend_verification(email);

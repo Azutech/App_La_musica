@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { ArtistService } from './artist.service';
 import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
 import { ApplyArtistDto, DistributionDto, LoginDto } from './dto/artist.dto';
@@ -28,12 +28,12 @@ export class ArtistController {
     const id = await this.artistService.loginDistributor(loginDto);
     return res.json(id);
   }
-  @Post('resend-verification')
-  async resendVerification(@Body() email: string, @Req() req: any, @Res() res: Response) {
+  @Put('resend-verification')
+  async resendVerification(@Query('email') email: string, @Req() req: any, @Res() res: Response) {
     const id = await this.artistService.resendVerification(email);
     return res.json(id);
   }
-  @Post('verify-distributor')
+  @Put('verify-distributor')
   async verifyDistributor(@Body() codeDto: CodeDto, @Req() req: any, @Res() res: Response) {
     const id = await this.artistService.verifyDistributor(codeDto);
     return res.json(id);

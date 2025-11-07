@@ -21,6 +21,7 @@ import { CustomJwtModule } from 'src/guards/jwt/jwt.module';
             port: configService.get<number>('REDIS_PORT'),
             username: configService.get<string>('REDIS_USERNAME'),
             password: configService.get<string>('REDIS_PASSWORD'),
+
           },
         }),
       },

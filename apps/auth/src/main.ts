@@ -21,6 +21,7 @@ async function bootstrap() {
         port:  configService.get<number>('REDIS_PORT'),
         username:  configService.get<string>('REDIS_USERNAME'),
         password: configService.get<string>('REDIS_PASSWORD'),
+        channel: configService.get<string>('REDIS_CHANNEL'),
       },
     });
 

@@ -101,7 +101,7 @@ export class UsersService {
 
     const findUser = await this.tokenRepo.findByEmail(email);
 
-    if (email) {
+    if (findUser) {
       await this.tokenRepo.deleteTokenI(findUser.email);
     }
 
