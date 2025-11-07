@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Artist {
+  id            String            @id @default(uuid())
+  userId        String            @unique               // from Auth microservice
+  distributorId String?                           // optional
+  distributor   Distributor?      @relation(fields: [distributorId], references: [id], onDelete: SetNull)
+  isActive      Boolean           @default(false)
+  stageName     String            @unique
+  realName      String?
+  bio           String?
+  genre         String?
+  followers     Int               @default(0)
+  profileImage  String?
+  originType    ArtistOriginType  @default(independent)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([stageName])
+  @@index([genre])
+}
+
+enum ArtistOriginType {
+  independent
+  distributor
+}
+
+
+
+model ArtistApplication {
+  id            String   @id @default(uuid())
+  userId        String
+  stageName     String
+  genre         String?
+  bio           String?
+  adminNote     String?
+  distributorId String?                           // optional
+  distributor   Distributor? @relation(fields: [distributorId], references: [id], onDelete: SetNull)
+  status        ApplicationStatus @default(pending)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Distributor {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  password   String
+  isActive      Boolean           @default(false)
+  website    String?
+  status     Status   @default(pending)
+  artists    Artist[] // One distributor -> many artists
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  artistApplications ArtistApplication[]
+  tokens             Token[]
+}
+
+enum Status {
+  active
+  pending
+  suspended
+}
+
+enum ApplicationStatus {
+  pending
+  approved
+  rejected
+}
+
+model Token {
+  id            String   @id @default(uuid())
+  distributorId String?                           // optional
+  distributor   Distributor? @relation(fields: [distributorId], references: [id], onDelete: SetNull)
+  email         String
+  code          Int   
+  expiresAt     DateTime @default(now())
+  createdAt     DateTime @default(now())
+  @@index([distributorId])
+  @@index([email])
+}

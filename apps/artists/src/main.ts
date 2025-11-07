@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { Logger, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const logger = new Logger('Starter-Play-V1');
+  const logger = new Logger('Artist-Play-V1');
 
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
@@ -21,7 +21,6 @@ async function bootstrap() {
         port: configService.get<number>('REDIS_PORT'),
         username: configService.get<string>('REDIS_USERNAME'),
         password: configService.get<string>('REDIS_PASSWORD'),
-        channel: configService.get<string>('REDIS_CHANNEL'),
       },
     });
 

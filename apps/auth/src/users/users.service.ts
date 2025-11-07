@@ -1,20 +1,19 @@
+import { Injectable, NotFoundException, HttpStatus } from '@nestjs/common';
 import {
-  Injectable,
-  UnauthorizedException,
-  ConflictException,
-  NotFoundException,
-  BadRequestException,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
-import { CodeDto, CreateUserDto, LoginDto, TokenDto } from './dto/user.dto';
+  CodeDto,
+  CreateUserDto,
+  LoginDto,
+  OnboardUserDto,
+  TokenDto,
+} from './dto/user.dto';
 import { RpcException } from '@nestjs/microservices';
-import { hashSync, genSaltSync, compareSync } from 'bcrypt';
+import { compareSync, hash } from 'bcrypt';
 import { UserRepository } from './repository/user.repository';
 import { TokenRepository } from './repository/token.repository';
 import * as moment from 'moment';
 import { Status } from './utils/enum/util.enum';
-import { console } from 'inspector';
+import { generateSecureCode, getExpiresAt } from 'src/common/utils/token.utils';
+import { Role } from './utils/enum/util.enum';
 
 @Injectable()
 export class UsersService {
@@ -33,8 +32,8 @@ export class UsersService {
       });
     }
 
-    password = hashSync(password, genSaltSync());
-    const user = await this.userRepo.createUser(email, password);
+    const hashed = await hash(password, 8); // async
+    const user = await this.userRepo.createUser(email, hashed);
 
     let token = await this.createToken({
       userId: user.id,
@@ -95,6 +94,46 @@ export class UsersService {
     };
   }
 
+  async onboardUser(OnboardUserDto: OnboardUserDto) {
+    const { firstName, lastName, userId } = OnboardUserDto;
+
+    const user = await this.userRepo.findById(userId);
+    if (!user) {
+      throw new RpcException({
+        message: 'User not found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    await this.userRepo.updateUser(userId, {
+      firstName,
+      lastName,
+    });
+
+    return {
+      message: 'User onboarded successfully',
+    };
+  }
+
+  async updateRole(userId: string) {
+
+    const user = await this.userRepo.findById(userId);
+    if (!user) {
+      throw new RpcException({
+        message: 'User not found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    await this.userRepo.updateUser(userId, {
+      role : Role.ARTIST      
+    });
+
+    return {
+      message: 'User updated to artist successfully',
+    };
+  }
+
   async resendVerification(email: string) {
     const user = await this.userRepo.findByEmail(email);
     if (!user) {
@@ -106,7 +145,7 @@ export class UsersService {
 
     const findUser = await this.tokenRepo.findByEmail(email);
 
-    if (email) {
+    if (findUser) {
       await this.tokenRepo.deleteTokenI(findUser.email);
     }
 
@@ -120,8 +159,8 @@ export class UsersService {
     };
   }
 
-  async dashboard(id: string) {
-    const user = await this.userRepo.findById(id);
+  async dashboard(userId: string) {
+    const user = await this.userRepo.findById(userId);
 
     if (!user) {
       throw new NotFoundException('User not found');
@@ -163,16 +202,14 @@ export class UsersService {
     const isMatch = await compareSync(password, user?.password);
     if (!isMatch) throw new RpcException('Invalid credentials');
 
-    return {
-      userId: user.id,
-    };
+    return user.id;
   }
 
   private async createToken(tokenDto: { userId: string; email: string }) {
     const { userId, email } = tokenDto;
 
-    const code = this.generateRandomNumbers();
-    const expiresAt = moment().add(15, 'minutes').toDate();
+    const code = generateSecureCode();
+    const expiresAt = getExpiresAt();
 
     const token = await this.tokenRepo.createToken(
       userId,
@@ -181,9 +218,5 @@ export class UsersService {
       expiresAt,
     );
     return token;
-  }
-
-  private generateRandomNumbers(): number {
-    return Math.floor(100000 + Math.random() * 900000); // 6-digit
   }
 }
