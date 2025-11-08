@@ -8,7 +8,7 @@ import { ApplyArtistDto, CodeDto, DistributionDto, LoginDto } from './dto/artist
 export class DistributorService {
   constructor(
     @Inject('DISTRIBUTOR_SERVICE') private readonly distroClient: ClientProxy,
-    // private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService,
   ) {}
 
 
@@ -36,7 +36,16 @@ export class DistributorService {
           .pipe(timeout(20000)), // 10 s guard
       );
 
-      return result;
+           const authTokenParam = {
+        userId: result,
+      };
+
+      const token = this.jwtService.createEncryptedToken(authTokenParam); // ← Standard JWT
+
+      return {
+        auth: token,
+        message: 'sign up successful',
+      };
     } catch (err: any) {
       // Nest already turned RPC exceptions into proper HTTP errors
       throw err;

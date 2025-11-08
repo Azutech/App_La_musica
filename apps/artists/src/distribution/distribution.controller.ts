@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { DistributionService } from './distribution.service';
 import { CodeDto, DistributionDto, LoginDto } from './dtos/distribution.dto';
 
@@ -26,8 +26,10 @@ export class DistributionController {
     }
 
   @MessagePattern({ cmd: 'distributor_dashboard' })
-  async getDistributor(id: string) {
-    return await this.distributionService.dashboard(id);
-  } 
+  async getDistributor(@Payload() payload: { distributorId: string }) {
+        const { distributorId } = payload;
+
+    return await this.distributionService.dashboard(distributorId);
+  }
 
 }

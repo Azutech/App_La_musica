@@ -3,6 +3,7 @@ export class ApplyArtistDto {
   stageName: string;
   genre?: string;
   bio?: string;
+  distributorId?: string;
 }
 
 export class DistributionDto {

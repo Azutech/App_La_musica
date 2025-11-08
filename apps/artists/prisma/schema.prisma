@@ -37,7 +37,7 @@ enum ArtistOriginType {
 
 model ArtistApplication {
   id            String   @id @default(uuid())
-  userId        String
+  userId        String?
   stageName     String
   genre         String?
   bio           String?

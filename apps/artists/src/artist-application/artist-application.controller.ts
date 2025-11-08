@@ -24,8 +24,8 @@ export class ArtistApplicationController {
     );
   }
   @MessagePattern({ cmd: 'artist_get_user_application ' })
-  async getUserApplication(userId: string) {
-    return await this.artistApplicationService.getApplicationByUserId(userId);
+  async getUserApplication(distributorId: string) {
+    return await this.artistApplicationService.getApplicationByUserId(distributorId);
   }
 
   @MessagePattern({ cmd: 'artist_approve_application_via_distributor' })

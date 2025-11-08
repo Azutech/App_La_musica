@@ -16,4 +16,12 @@ export class ArtistController {
       return res.status(HttpStatus.CREATED).json({message: 'Application submitted', applicationId: id});
   
     }
+    @UseGuards(JwtAuthGuard)
+    @Post('applyDistro')
+    async applyArtistviaDistro(@Body() applyArtistDto: ApplyArtistDto, @Req() req: any, @Res() res: Response) {
+        applyArtistDto.distributorId = req.user.userId;
+      const id = await this.artistService.applyArtistviaDistro(applyArtistDto);
+      return res.status(HttpStatus.CREATED).json({message: 'Application submitted', applicationId: id});
+  
+    }
 }
