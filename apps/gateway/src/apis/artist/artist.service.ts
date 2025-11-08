@@ -13,7 +13,20 @@ export class ArtistService {
         try {
           const result = await firstValueFrom(
             this.artistClient
-              .send({ cmd: 'artist_apply' }, applyArtistDto)
+              .send({ cmd: 'artist_apply_user' }, applyArtistDto)
+              .pipe(timeout(20000)), // 10 s guard
+          );
+          return result;
+        } catch (err: any) {
+          // Nest already turned RPC exceptions into proper HTTP errors
+          throw err;
+        }
+      }
+      async applyArtistviaDistro(applyArtistDto: ApplyArtistDto) {
+        try {
+          const result = await firstValueFrom(
+            this.artistClient
+              .send({ cmd: 'artist_apply_distributor' }, applyArtistDto)
               .pipe(timeout(20000)), // 10 s guard
           );
           return result;

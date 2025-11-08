@@ -1,7 +1,7 @@
 export class ApplyArtistDto {
   userId: string; // from Auth service
   stageName: string;
-  distributionId: string;
+  distributorId: string;
   genre?: string;
   bio?: string;
 }

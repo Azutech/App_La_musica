@@ -25,7 +25,7 @@ export class ArtistApplicationService {
       });
     }
 
-    const createApp = await this.appRepo.createUser({
+    const createApp = await this.appRepo.createApplication({
       userId: dto.userId,
       stageName: dto.stageName,
       bio: dto.bio,
@@ -35,7 +35,7 @@ export class ArtistApplicationService {
     return createApp;
   }
   async applyViaDistributor(dto: ApplyArtistDto) {
-    const applyArtist = await this.appRepo.findDistroId(dto.distributionId);
+    const applyArtist = await this.appRepo.findDistroId(dto.distributorId);
     if (applyArtist) {
       throw new RpcException({
         message: 'Applications already created',
@@ -43,8 +43,8 @@ export class ArtistApplicationService {
       });
     }
 
-    const createApp = await this.appRepo.createUser({
-      userId: dto.userId,
+    const createApp = await this.appRepo.createApplication({
+      distributorId: dto.distributorId,
       stageName: dto.stageName,
       bio: dto.bio,
       genre: dto.genre,
