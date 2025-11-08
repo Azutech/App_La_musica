@@ -17,15 +17,10 @@ export class ArtistApplicationController {
   async applyViaDistributor(data: ApplyArtistDto) {
     return await this.artistApplicationService.applyViaDistributor(data);
   }
-  @MessagePattern({ cmd: 'artist_get_distributor_application' })
-  async getDistributorApplication(distributorId: string) {
-    return await this.artistApplicationService.getApplicationByDistributorId(
-      distributorId,
-    );
-  }
-  @MessagePattern({ cmd: 'artist_get_user_application ' })
-  async getUserApplication(distributorId: string) {
-    return await this.artistApplicationService.getApplicationByUserId(distributorId);
+
+  @MessagePattern({ cmd: 'artist_get_application ' })
+  async getUserApplication(applicationId: string) {
+    return await this.artistApplicationService.getApplicationId(applicationId);
   }
 
   @MessagePattern({ cmd: 'artist_approve_application_via_distributor' })

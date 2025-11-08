@@ -31,5 +31,9 @@ export class DistributionController {
 
     return await this.distributionService.dashboard(distributorId);
   }
+  @MessagePattern({ cmd: 'distributor_list' })
+  async getAllDistributors() {
+    return await this.distributionService.findAllDistributors();
+  }
 
 }

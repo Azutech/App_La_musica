@@ -52,8 +52,8 @@ export class ArtistApplicationService {
 
     return createApp;
   }
-  async getApplicationByUserId(userId: string) {
-    const application = await this.appRepo.findUserAppsId(userId);
+  async getApplicationId(applicationId: string) {
+    const application = await this.appRepo.findAppId(applicationId);
     if (!application) {
       throw new RpcException({
         message: 'Application not found',
@@ -62,18 +62,7 @@ export class ArtistApplicationService {
     }
     return application;
   }
-
-  async getApplicationByDistributorId(distributorId: string) {
-    const application = await this.appRepo.findDistroId(distributorId);
-    if (!application) {
-      throw new RpcException({
-        message: 'Application not found',
-        statusCode: HttpStatus.NOT_FOUND,
-      });
-    }
-    return application;
-  }
-
+  
   async approveArtistApplicationViaDistributor(applicationId: string) {
        const application = await this.appRepo.findAppId(applicationId);
 

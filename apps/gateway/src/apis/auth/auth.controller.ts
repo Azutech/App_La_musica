@@ -13,7 +13,12 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
-import { LoginDto, CreateUserDto, CodeDto, OnboardUserDto } from './dtos/auth.dto';
+import {
+  LoginDto,
+  CreateUserDto,
+  CodeDto,
+  OnboardUserDto,
+} from './dtos/auth.dto';
 import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
 // import { RpcExceptionFilter } from 'src/common/filters/rpc-exception.filter';
 
@@ -53,7 +58,11 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Put('onboard_user')
-  async onboard_user(@Body() onboardUserDto: OnboardUserDto, @Req() req: any, @Res() res: Response) {
+  async onboard_user(
+    @Body() onboardUserDto: OnboardUserDto,
+    @Req() req: any,
+    @Res() res: Response,
+  ) {
     onboardUserDto.userId = req.user.userId;
     const onboard = await this.authService.onboard_user(onboardUserDto);
     return res.status(HttpStatus.OK).json(onboard);

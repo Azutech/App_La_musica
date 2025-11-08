@@ -3,7 +3,12 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
 import { JwtService } from 'src/guards/jwt/jwt.service';
-import { CodeDto, CreateUserDto, LoginDto, OnboardUserDto } from './dtos/auth.dto';
+import {
+  CodeDto,
+  CreateUserDto,
+  LoginDto,
+  OnboardUserDto,
+} from './dtos/auth.dto';
 
 @Injectable()
 export class AuthService {
