@@ -9,10 +9,6 @@ export class ArtistApplicationController {
     private readonly artistApplicationService: ArtistApplicationService,
   ) {}
 
-  @MessagePattern({ cmd: 'artist_apply_user' })
-  async applyViaUser(data: ApplyArtistDto) {
-    return await this.artistApplicationService.applyViaUser(data);
-  }
   @MessagePattern({ cmd: 'artist_apply_distributor' })
   async applyViaDistributor(data: ApplyArtistDto) {
     return await this.artistApplicationService.applyViaDistributor(data);
@@ -30,17 +26,10 @@ export class ArtistApplicationController {
     );
   }
 
-  @MessagePattern({ cmd: 'artist_approve_application_via_user' })
-  async approveArtistApplicationViaUser(applicationId: string) {
-    return await this.artistApplicationService.approveArtistApplicationViaUser(
-      applicationId,
-    );
-  }
-
   @MessagePattern({ cmd: 'artist_reject_application' })
   async rejectApplication(applicationId: string) {
     return await this.artistApplicationService.rejectArtistApplicationViaDistributor(
       applicationId,
     );
-  }   
+  }
 }

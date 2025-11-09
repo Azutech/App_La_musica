@@ -7,20 +7,19 @@ import { ApplicationI } from '../interface/application.interface';
 export class ArtistApplicationRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-async createApplication(app: ApplicationI): Promise<ArtistApplication> {
-  const data: any = {
-    stageName: app.stageName,
-    bio: app.bio,
-    genre: app.genre,
-  };
+  async createApplication(app: ApplicationI): Promise<ArtistApplication> {
+    const data: any = {
+      stageName: app.stageName,
+      bio: app.bio,
+      genre: app.genre,
+    };
 
-  // Only include whichever exists
-  if (app.userId) data.userId = app.userId;
-  if (app.distributorId) data.distributorId = app.distributorId;
+    // Only include whichever exists
+    if (app.userId) data.userId = app.userId;
+    if (app.distributorId) data.distributorId = app.distributorId;
 
-  return this.prisma.artistApplication.create({ data });
-}
-
+    return this.prisma.artistApplication.create({ data });
+  }
 
   async findUserAppsId(
     userId: string | { userId: string },

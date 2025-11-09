@@ -70,7 +70,7 @@ export class DistributionService {
       return [];
     }
     return distributors;
-  } 
+  }
 
   async login(dto: LoginDto) {
     const { email, password } = dto;
