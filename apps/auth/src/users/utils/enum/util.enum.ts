@@ -3,8 +3,8 @@ export enum Status {
   ACTIVE = 'active',
   SUSPENDED = 'suspended',
 }
-export enum Role {
-  USER = 'user',
-  ARTIST = 'artist',
-  ADMIN = 'admin',
+export enum UserRoles {
+  RWX_ADMIN = 'admin',
+  RWX_LISTENER = 'listener',
+  RWX_DISTRIBUTOR = 'distributor',
 }

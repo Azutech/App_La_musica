@@ -13,7 +13,7 @@ import { TokenRepository } from './repository/token.repository';
 import * as moment from 'moment';
 import { Status } from './utils/enum/util.enum';
 import { generateSecureCode, getExpiresAt } from 'src/common/utils/token.utils';
-import { Role } from './utils/enum/util.enum';
+import { UserRoles } from './utils/enum/util.enum';
 
 @Injectable()
 export class UsersService {
@@ -46,18 +46,24 @@ export class UsersService {
     };
   }
 
-  async findAll() {
-    const allUsers = await this.userRepo.findAll();
+async findAll() {
+  const allUsers = await this.userRepo.findAll();
 
-    if (allUsers.length === 0) {
-      return [];
-    }
-    const setuser = allUsers.map(({ password, ...user }) => user);
-    return {
-      message: 'user returned',
-      setuser,
-    };
+  if (allUsers.length === 0) {
+    return [];
   }
+
+  // filter by role
+  const listenerUsers = allUsers
+    .filter(user => user.role === UserRoles.RWX_LISTENER) // only listeners
+    .map(({ password, ...user }) => user);    // remove password
+
+  return {
+    message: 'users returned',
+    users: listenerUsers,
+  };
+}
+
 
   async verification(codeDto: CodeDto) {
     const { code } = codeDto;
@@ -126,7 +132,7 @@ export class UsersService {
     }
 
     await this.userRepo.updateUser(userId, {
-      role : Role.ARTIST      
+      role : UserRoles.RWX_LISTENER      
     });
 
     return {
@@ -202,7 +208,13 @@ export class UsersService {
     const isMatch = await compareSync(password, user?.password);
     if (!isMatch) throw new RpcException('Invalid credentials');
 
-    return user.id;
+   const auth = {
+      userId: user.id,
+      role: user.role,
+   }
+    
+   return auth
+
   }
 
   private async createToken(tokenDto: { userId: string; email: string }) {

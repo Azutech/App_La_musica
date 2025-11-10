@@ -12,6 +12,8 @@ export class RoleGuard implements CanActivate {
       [context.getHandler(), context.getClass()],
     );
 
+    console.log('Required Roles:', requiredRoles);
+
     // allow all routes with no Role decorator
     if (!requiredRoles) {
       return true;
@@ -19,10 +21,14 @@ export class RoleGuard implements CanActivate {
     // get the request object
     const req = context.switchToHttp().getRequest();
 
+    console.log('Request User:', req.user);
+
+    console.log('User RoleX:', req?.user?.role);
+
     if (!req?.user?.role) {
-      return true;
+      return false;
     }
 
-    return requiredRoles.some((role) => role === req.user.role);
+    return requiredRoles.some((role) => role === req.user?.role);
   }
 }

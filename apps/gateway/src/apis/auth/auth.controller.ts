@@ -20,6 +20,9 @@ import {
   OnboardUserDto,
 } from './dtos/auth.dto';
 import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
+import { RoleGuard } from 'src/guards/role.guard';
+import { Roles } from 'src/decorators/user.decorator';
+import { UserRoles } from './enum/utils/enum.utils';
 // import { RpcExceptionFilter } from 'src/common/filters/rpc-exception.filter';
 
 @Controller('auth')
@@ -30,10 +33,12 @@ export class AuthController {
   async signup(@Body() loginDto: CreateUserDto) {
     return await this.authService.signup(loginDto);
   }
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRoles.RWX_ADMIN)
   @Get('users')
   async allUsers(@Res() res: Response) {
     const users = await this.authService.allUsers();
-    return res.json(users); // ← Send JSON
+    return res.status(HttpStatus.OK).json(users);
   }
 
   @Post('login')

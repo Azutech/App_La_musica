@@ -65,14 +65,15 @@ export class AuthService {
       );
 
       const authTokenParam = {
-        userId: result,
+        userId: result.userId,
+        role: result.role,
       };
 
       const token = this.jwtService.createEncryptedToken(authTokenParam); // ← Standard JWT
 
       return {
         auth: token,
-        message: 'sign up successful',
+        message: 'sign in successful',
       };
     } catch (err: any) {
       // Nest already turned RPC exceptions into proper HTTP errors

@@ -7,10 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 enum Role {
-  listner
+  listener
   artist
   admin
 }
@@ -41,7 +39,7 @@ model User {
   lastName  String?
   artistId  String?
   status    Status   @default(pending)
-  role      Role     @default(listner)
+  role      Role     @default(listener)
   password  String
   isActive  Boolean  @default(false)
   team      String? 
