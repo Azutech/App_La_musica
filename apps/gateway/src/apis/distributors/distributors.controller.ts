@@ -15,6 +15,9 @@ import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
 import { ApplyArtistDto, DistributionDto, LoginDto } from './dto/artist.dto';
 import { Response } from 'express';
 import { CodeDto } from 'src/apis/auth/dtos/auth.dto';
+import { RoleGuard } from 'src/guards/role.guard';
+import { Roles } from 'src/decorators/user.decorator';
+import { UserRoles } from '../auth/enum/utils/enum.utils';
 
 @Controller('distro')
 export class ArtistController {
@@ -67,7 +70,8 @@ export class ArtistController {
       .status(HttpStatus.OK)
       .json({ message: 'Dashboard data retrieved successfully', data: id });
   }
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRoles.RWX_ADMIN)
   @Get('distributor-list')
   async distributorList(@Req() req: any, @Res() res: Response) {
     const id = await this.distributorService.getAllDistributors();

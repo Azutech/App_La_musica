@@ -23,7 +23,7 @@ export class RoleGuard implements CanActivate {
 
     console.log('Request User:', req.user);
 
-    console.log('User RoleX:', req?.user?.role);
+    console.log('User Role:', req?.user?.role);
 
     if (!req?.user?.role) {
       return false;

@@ -66,7 +66,7 @@ export class ArtistService {
     }
   }
 
-  async getAllPendingApplications() { 
+  async getAllPendingApplications() {
     try {
       const result = await firstValueFrom(
         this.artistClient
@@ -79,7 +79,7 @@ export class ArtistService {
       throw err;
     }
   }
-  async getAllApprovedApplications() { 
+  async getAllApprovedApplications() {
     try {
       const result = await firstValueFrom(
         this.artistClient
@@ -92,7 +92,7 @@ export class ArtistService {
       throw err;
     }
   }
-  async getAllRejectedApplications() { 
+  async getAllRejectedApplications() {
     try {
       const result = await firstValueFrom(
         this.artistClient

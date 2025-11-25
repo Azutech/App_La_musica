@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Get,
   HttpStatus,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -17,18 +19,6 @@ export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Post('apply')
-  async applyForArtist(
-    @Body() applyArtistDto: ApplyArtistDto,
-    @Req() req: any,
-    @Res() res: Response,
-  ) {
-    applyArtistDto.userId = req.user.userId;
-    const id = await this.artistService.applyArtist(applyArtistDto);
-    return res
-      .status(HttpStatus.CREATED)
-      .json({ message: 'Application submitted', applicationId: id });
-  }
   @UseGuards(JwtAuthGuard)
   @Post('applyDistro')
   async applyArtistviaDistro(
@@ -41,5 +31,65 @@ export class ArtistController {
     return res
       .status(HttpStatus.CREATED)
       .json({ message: 'Application submitted', applicationId: id });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('viewApplication')
+  async getApplicationByDistributorId(
+    @Req() req: any,
+    @Res() res: Response,
+    @Query() applicationId: string,
+  ) {
+    const application =
+      await this.artistService.getApplicationByDistributorId(applicationId);
+    return res.status(HttpStatus.OK).json(application);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('approveApplication')
+  async approveArtistApplication(
+    @Req() req: any,
+    @Res() res: Response,
+    @Body('applicationId') applicationId: string,
+  ) {
+    const approvedApp =
+      await this.artistService.approveArtistApplication(applicationId);
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: 'Application approved', approvedApp });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('rejectApplication')
+  async rejectArtistApplication(
+    @Req() req: any,
+    @Res() res: Response,
+    @Body('applicationId') applicationId: string,
+  ) {
+    const rejectedApp =
+      await this.artistService.rejectArtistApplication(applicationId);
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: 'Application rejected', rejectedApp });
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('approvedApplications')
+  async getApprovedApplications(@Req() req: any, @Res() res: Response) {
+    const applications = await this.artistService.getAllApprovedApplications();
+    return res.status(HttpStatus.OK).json(applications);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('pendingApplications')
+  async getPendingApplications(@Req() req: any, @Res() res: Response) {
+    const applications = await this.artistService.getAllPendingApplications();
+    return res.status(HttpStatus.OK).json(applications);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('rejectedApplications')
+  async getRejectedApplications(@Req() req: any, @Res() res: Response) {
+    const applications = await this.artistService.getAllRejectedApplications();
+    return res.status(HttpStatus.OK).json(applications);
   }
 }

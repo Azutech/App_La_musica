@@ -46,7 +46,7 @@ export class DistributorService {
 
       return {
         auth: token,
-        message: 'sign up successful',
+        message: 'sign in successful',
       };
     } catch (err: any) {
       // Nest already turned RPC exceptions into proper HTTP errors
