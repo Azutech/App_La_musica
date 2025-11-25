@@ -8,19 +8,6 @@ import { ClientProxy } from '@nestjs/microservices/client/client-proxy';
 export class ArtistService {
   @Inject('ARTIST_SERVICE') private readonly artistClient: ClientProxy;
 
-  async applyArtist(applyArtistDto: ApplyArtistDto) {
-    try {
-      const result = await firstValueFrom(
-        this.artistClient
-          .send({ cmd: 'artist_apply_user' }, applyArtistDto)
-          .pipe(timeout(20000)), // 10 s guard
-      );
-      return result;
-    } catch (err: any) {
-      // Nest already turned RPC exceptions into proper HTTP errors
-      throw err;
-    }
-  }
   async applyArtistviaDistro(applyArtistDto: ApplyArtistDto) {
     try {
       const result = await firstValueFrom(
@@ -39,6 +26,77 @@ export class ArtistService {
       const result = await firstValueFrom(
         this.artistClient
           .send({ cmd: 'artist_get_application' }, applicationId)
+          .pipe(timeout(20000)), // 10 s guard
+      );
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
+
+  async approveArtistApplication(applicationId: string) {
+    try {
+      const result = await firstValueFrom(
+        this.artistClient
+          .send(
+            { cmd: 'artist_approve_application_via_distributor' },
+            applicationId,
+          )
+          .pipe(timeout(20000)), // 10 s guard
+      );
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
+
+  async rejectArtistApplication(applicationId: string) {
+    try {
+      const result = await firstValueFrom(
+        this.artistClient
+          .send({ cmd: 'artist_reject_application' }, applicationId)
+          .pipe(timeout(20000)), // 10 s guard
+      );
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
+
+  async getAllPendingApplications() { 
+    try {
+      const result = await firstValueFrom(
+        this.artistClient
+          .send({ cmd: 'pending_application' }, {})
+          .pipe(timeout(20000)), // 10 s guard
+      );
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
+  async getAllApprovedApplications() { 
+    try {
+      const result = await firstValueFrom(
+        this.artistClient
+          .send({ cmd: 'approved_application' }, {})
+          .pipe(timeout(20000)), // 10 s guard
+      );
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
+  async getAllRejectedApplications() { 
+    try {
+      const result = await firstValueFrom(
+        this.artistClient
+          .send({ cmd: 'rejected_application' }, {})
           .pipe(timeout(20000)), // 10 s guard
       );
       return result;
