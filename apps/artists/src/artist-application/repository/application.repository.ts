@@ -40,6 +40,7 @@ export class ArtistApplicationRepository {
     });
   }
 
+
   async findDistroId(
     distributorId: string | { userId: string },
     status?: ApplicationStatus,
@@ -51,6 +52,10 @@ export class ArtistApplicationRepository {
     }
 
     return this.prisma.artistApplication.findFirst({ where });
+  }
+
+  async findAll(): Promise<ArtistApplication[]> {
+    return this.prisma.artistApplication.findMany();
   }
 
   async updateStatus(

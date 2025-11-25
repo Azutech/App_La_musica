@@ -18,6 +18,18 @@ export class ArtistApplicationController {
   async getUserApplication(applicationId: string) {
     return await this.artistApplicationService.getApplicationId(applicationId);
   }
+  @MessagePattern({ cmd: 'pending_application ' })
+  async pendingApplication() {
+    return await this.artistApplicationService.findAllPendingApplications();
+  }
+  @MessagePattern({ cmd: 'approved_application ' })
+  async approvedApplications() {
+    return await this.artistApplicationService.findApprovedAllApplications();
+  }
+  @MessagePattern({ cmd: 'rejected_application ' })
+  async rejectedApplications() {
+    return await this.artistApplicationService.findRejectedAllApplications();
+  }
 
   @MessagePattern({ cmd: 'artist_approve_application_via_distributor' })
   async approveArtistApplicationViaDistributor(applicationId: string) {

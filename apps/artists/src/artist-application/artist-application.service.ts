@@ -44,6 +44,48 @@ export class ArtistApplicationService {
     return application;
   }
 
+  async findAllPendingApplications() {
+    const applications = await this.appRepo.findAll();
+
+    if (applications.length === 0) {
+      return [];
+    }
+
+    const pendingApplications = applications.filter(
+      (app) => app.status === ApplicationStatus.PENDING,
+    );
+
+    return pendingApplications;
+  }
+
+  async findApprovedAllApplications() {
+    const applications = await this.appRepo.findAll();
+
+    if (applications.length === 0) {
+      return [];
+    }
+
+    const pendingApplications = applications.filter(
+      (app) => app.status === ApplicationStatus.APPROVED,
+    );
+
+    return pendingApplications;
+  }
+
+  async findRejectedAllApplications() {
+    const applications = await this.appRepo.findAll();
+
+    if (applications.length === 0) {
+      return [];
+    }
+
+    const pendingApplications = applications.filter(
+      (app) => app.status === ApplicationStatus.REJECTED,
+    );
+
+    return pendingApplications;
+  }
+
   async approveArtistApplicationViaDistributor(applicationId: string) {
     const application = await this.appRepo.findAppId(applicationId);
 
