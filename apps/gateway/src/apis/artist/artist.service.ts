@@ -80,6 +80,21 @@ export class ArtistService {
       throw err;
     }
   }
+
+  async allDistroApplications(distributorId:string) {
+    try {
+
+      const result = await firstValueFrom(
+        this.artistClient
+          .send({ cmd: 'distro_application' }, distributorId)
+          .pipe(timeout(20000)), // 10 s guard
+      );
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
   async getAllApprovedApplications() {
     try {
       const result = await firstValueFrom(
