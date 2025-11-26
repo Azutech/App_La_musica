@@ -93,6 +93,7 @@ export class ArtistService {
   }
   async pendingDistroApplications(distributorId: string) {
     try {
+      console.log(distributorId)
       const result = await firstValueFrom(
         this.artistClient
           .send({ cmd: 'distro_pending_application' }, distributorId)

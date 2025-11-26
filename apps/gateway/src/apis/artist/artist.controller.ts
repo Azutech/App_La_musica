@@ -69,37 +69,37 @@ export class ArtistController {
       await this.artistService.allDistroApplications(distributorId);
     return res
       .status(HttpStatus.OK)
-      .json({ message: 'Application approved', approvedApp });
+      .json({ message: 'All applications retrieved', approvedApp });
   }
   @UseGuards(JwtAuthGuard)
-  @Put('applications/allDistroPendingApplications')
+  @Get('applications/allDistroPendingApplications')
   async pendingDistroApplications(@Req() req: any, @Res() res: Response) {
     const distributorId = req.user.userId;
     const approvedApp =
       await this.artistService.pendingDistroApplications(distributorId);
     return res
       .status(HttpStatus.OK)
-      .json({ message: 'Application approved', approvedApp });
+      .json({ message: 'All pending Application approved', approvedApp });
   }
   @UseGuards(JwtAuthGuard)
-  @Put('applications/allDistroApprovedApplications')
+  @Get('applications/allDistroApprovedApplications')
   async approvedDistroApplications(@Req() req: any, @Res() res: Response) {
     const distributorId = req.user.userId;
     const approvedApp =
       await this.artistService.approvedDistroApplications(distributorId);
     return res
       .status(HttpStatus.OK)
-      .json({ message: 'Application approved', approvedApp });
+      .json({ message: 'All approved Application retrieved', approvedApp });
   }
   @UseGuards(JwtAuthGuard)
-  @Put('applications/allDistroRejectedApplications')
+  @Get('applications/allDistroRejectedApplications')
   async rejectedDistroApplications(@Req() req: any, @Res() res: Response) {
     const distributorId = req.user.userId;
     const approvedApp =
       await this.artistService.rejectedDistroApplications(distributorId);
     return res
       .status(HttpStatus.OK)
-      .json({ message: 'Application approved', approvedApp });
+      .json({ message: 'All rejected Application retrieved', approvedApp });
   }
 
   @UseGuards(JwtAuthGuard)

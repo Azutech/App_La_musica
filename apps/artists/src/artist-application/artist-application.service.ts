@@ -85,6 +85,7 @@ export class ArtistApplicationService {
   }
   async distroPendingApplications(id: string) {
     const distro = await this.distributionRepository.findOne(id);
+    console.log(distro)
     if (!distro) {
       throw new RpcException({
         message: 'Distributor not found',
