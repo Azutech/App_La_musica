@@ -95,6 +95,48 @@ export class ArtistService {
       throw err;
     }
   }
+  async pendingDistroApplications(distributorId:string) {
+    try {
+
+      const result = await firstValueFrom(
+        this.artistClient
+          .send({ cmd: 'distro_pending_application' }, distributorId)
+          .pipe(timeout(20000)), // 10 s guard
+      );
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
+  async approvedDistroApplications(distributorId:string) {
+    try {
+
+      const result = await firstValueFrom(
+        this.artistClient
+          .send({ cmd: 'distro_approved_application' }, distributorId)
+          .pipe(timeout(20000)), // 10 s guard
+      );
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
+  async rejectedDistroApplications(distributorId:string) {
+    try {
+
+      const result = await firstValueFrom(
+        this.artistClient
+          .send({ cmd: 'distro_rejected_application' }, distributorId)
+          .pipe(timeout(20000)), // 10 s guard
+      );
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
   async getAllApprovedApplications() {
     try {
       const result = await firstValueFrom(

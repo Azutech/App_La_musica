@@ -77,6 +77,48 @@ export class ArtistController {
       .status(HttpStatus.OK)
       .json({ message: 'Application approved', approvedApp });
   }
+  @UseGuards(JwtAuthGuard)
+  @Get('applications/allDistroPendingApplications')
+  async pendingDistroApplications(
+    @Req() req: any,
+    @Res() res: Response,
+  ) {
+
+    const distributorId = req.user.userId 
+    const approvedApp =
+      await this.artistService.pendingDistroApplications(distributorId);
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: 'Application approved', approvedApp });
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('applications/allDistroApprovedApplications')
+  async approvedDistroApplications(
+    @Req() req: any,
+    @Res() res: Response,
+  ) {
+
+    const distributorId = req.user.userId 
+    const approvedApp =
+      await this.artistService.approvedDistroApplications(distributorId);
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: 'Application approved', approvedApp });
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('applications/allDistroRejectedApplications')
+  async rejectedDistroApplications(
+    @Req() req: any,
+    @Res() res: Response,
+  ) {
+
+    const distributorId = req.user.userId 
+    const approvedApp =
+      await this.artistService.rejectedDistroApplications(distributorId);
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: 'Application approved', approvedApp });
+  }
 
   @UseGuards(JwtAuthGuard)
   @Put('rejectApplication')
