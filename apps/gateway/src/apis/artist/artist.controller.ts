@@ -23,7 +23,6 @@ export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
 
   @UseGuards(JwtAuthGuard)
-  @UseGuards(JwtAuthGuard)
   @Post('applyDistro')
   async applyArtistviaDistro(
     @Body() applyArtistDto: ApplyArtistDto,
@@ -38,7 +37,6 @@ export class ArtistController {
   }
 
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(UserRoles.RWX_ADMIN)
   @Get('viewApplication')
   async getApplicationByDistributorId(
     @Req() req: any,
@@ -65,12 +63,8 @@ export class ArtistController {
   }
   @UseGuards(JwtAuthGuard)
   @Get('applications/allDistroApplications')
-  async allDistroApplications(
-    @Req() req: any,
-    @Res() res: Response,
-  ) {
-
-    const distributorId = req.user.userId 
+  async allDistroApplications(@Req() req: any, @Res() res: Response) {
+    const distributorId = req.user.userId;
     const approvedApp =
       await this.artistService.allDistroApplications(distributorId);
     return res
@@ -79,12 +73,8 @@ export class ArtistController {
   }
   @UseGuards(JwtAuthGuard)
   @Put('applications/allDistroPendingApplications')
-  async pendingDistroApplications(
-    @Req() req: any,
-    @Res() res: Response,
-  ) {
-
-    const distributorId = req.user.userId 
+  async pendingDistroApplications(@Req() req: any, @Res() res: Response) {
+    const distributorId = req.user.userId;
     const approvedApp =
       await this.artistService.pendingDistroApplications(distributorId);
     return res
@@ -93,12 +83,8 @@ export class ArtistController {
   }
   @UseGuards(JwtAuthGuard)
   @Put('applications/allDistroApprovedApplications')
-  async approvedDistroApplications(
-    @Req() req: any,
-    @Res() res: Response,
-  ) {
-
-    const distributorId = req.user.userId 
+  async approvedDistroApplications(@Req() req: any, @Res() res: Response) {
+    const distributorId = req.user.userId;
     const approvedApp =
       await this.artistService.approvedDistroApplications(distributorId);
     return res
@@ -107,12 +93,8 @@ export class ArtistController {
   }
   @UseGuards(JwtAuthGuard)
   @Put('applications/allDistroRejectedApplications')
-  async rejectedDistroApplications(
-    @Req() req: any,
-    @Res() res: Response,
-  ) {
-
-    const distributorId = req.user.userId 
+  async rejectedDistroApplications(@Req() req: any, @Res() res: Response) {
+    const distributorId = req.user.userId;
     const approvedApp =
       await this.artistService.rejectedDistroApplications(distributorId);
     return res
@@ -134,21 +116,24 @@ export class ArtistController {
       .json({ message: 'Application rejected', rejectedApp });
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('approvedApplications')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRoles.RWX_ADMIN)
+  @Get('applications/approvedApplications')
   async getApprovedApplications(@Req() req: any, @Res() res: Response) {
     const applications = await this.artistService.getAllApprovedApplications();
     return res.status(HttpStatus.OK).json(applications);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('pendingApplications')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRoles.RWX_ADMIN)
+  @Get('applications/pendingApplications')
   async getPendingApplications(@Req() req: any, @Res() res: Response) {
     const applications = await this.artistService.getAllPendingApplications();
     return res.status(HttpStatus.OK).json(applications);
   }
-  @UseGuards(JwtAuthGuard)
-  @Get('rejectedApplications')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRoles.RWX_ADMIN)
+  @Get('applications/rejectedApplications')
   async getRejectedApplications(@Req() req: any, @Res() res: Response) {
     const applications = await this.artistService.getAllRejectedApplications();
     return res.status(HttpStatus.OK).json(applications);

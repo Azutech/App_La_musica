@@ -40,10 +40,7 @@ export class ArtistService {
       console.log('Service got application ID:', applicationId);
       const result = await firstValueFrom(
         this.artistClient
-          .send(
-            { cmd: 'approve_application' },
-            applicationId,
-          )
+          .send({ cmd: 'approve_application' }, applicationId)
           .pipe(timeout(20000)), // 10 s guard
       );
       return result;
@@ -81,9 +78,8 @@ export class ArtistService {
     }
   }
 
-  async allDistroApplications(distributorId:string) {
+  async allDistroApplications(distributorId: string) {
     try {
-
       const result = await firstValueFrom(
         this.artistClient
           .send({ cmd: 'distro_application' }, distributorId)
@@ -95,9 +91,8 @@ export class ArtistService {
       throw err;
     }
   }
-  async pendingDistroApplications(distributorId:string) {
+  async pendingDistroApplications(distributorId: string) {
     try {
-
       const result = await firstValueFrom(
         this.artistClient
           .send({ cmd: 'distro_pending_application' }, distributorId)
@@ -109,9 +104,8 @@ export class ArtistService {
       throw err;
     }
   }
-  async approvedDistroApplications(distributorId:string) {
+  async approvedDistroApplications(distributorId: string) {
     try {
-
       const result = await firstValueFrom(
         this.artistClient
           .send({ cmd: 'distro_approved_application' }, distributorId)
@@ -123,9 +117,8 @@ export class ArtistService {
       throw err;
     }
   }
-  async rejectedDistroApplications(distributorId:string) {
+  async rejectedDistroApplications(distributorId: string) {
     try {
-
       const result = await firstValueFrom(
         this.artistClient
           .send({ cmd: 'distro_rejected_application' }, distributorId)
