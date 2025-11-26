@@ -34,9 +34,9 @@ export class ArtistApplicationRepository {
     return this.prisma.artistApplication.findFirst({ where });
   }
 
-  async findAppId(userId: string): Promise<ArtistApplication | null> {
+  async findAppId(id: string): Promise<ArtistApplication | null> {
     return await this.prisma.artistApplication.findFirst({
-      where: { id: userId },
+      where: { id },
     });
   }
 

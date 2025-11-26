@@ -13,6 +13,9 @@ import { Response } from 'express';
 import { ArtistService } from './artist.service';
 import { ApplyArtistDto } from '../distributors/dto/artist.dto';
 import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
+import { RoleGuard } from 'src/guards/role.guard';
+import { Roles } from 'src/decorators/user.decorator';
+import { UserRoles } from '../auth/enum/utils/enum.utils';
 
 @Controller('artist')
 export class ArtistController {
@@ -33,7 +36,8 @@ export class ArtistController {
       .json({ message: 'Application submitted', applicationId: id });
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRoles.RWX_ADMIN)
   @Get('viewApplication')
   async getApplicationByDistributorId(
     @Req() req: any,
