@@ -1,16 +1,16 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
-import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { lastValueFrom } from 'rxjs';
+import { RpcException } from '@nestjs/microservices';
 import { ApplyArtistDto } from 'src/artist-application/dtos/applications.dto';
 import { ArtistApplicationRepository } from 'src/artist-application/repository/application.repository';
 import { ApplicationStatus } from './enums/enum.util';
 import { ArtistRepository } from 'src/artists/repository/artist.repository';
+import { DistributionRepository } from 'src/distribution/repository/distribution.repository';
 
 @Injectable()
 export class ArtistApplicationService {
   constructor(
     private appRepo: ArtistApplicationRepository,
-    // private authClient: ClientProxy,
+    private distributionRepository: DistributionRepository,
 
     private artistRepo: ArtistRepository,
   ) {}
@@ -67,8 +67,15 @@ export class ArtistApplicationService {
     return pendingApplications;
   }
 
-  async distroApplications(distributorId: string) {
-    const apps = await this.appRepo.findAllDistroApps(distributorId);
+  async distroApplications(id: string) {
+    const distro = await this.distributionRepository.findOne(id);
+    if (!distro) {
+      throw new RpcException({
+        message: 'Distributor not found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+    const apps = await this.appRepo.findAllDistroApps(distro.id);
 
     if (apps.length === 0) {
       return [];

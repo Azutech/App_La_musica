@@ -46,6 +46,12 @@ export class ArtistApplicationController {
       applicationId,
     );
   }
+  @MessagePattern({ cmd: 'distro_application' })
+  async distroApplications(distributorId: string) {
+    return await this.artistApplicationService.distroApplications(
+      distributorId,
+    );
+  }
   @MessagePattern({ cmd: 'all_artist_application' })
   async allApplication(distributorId: string) {
     return await this.artistApplicationService.rejectArtistApplicationViaDistributor(
