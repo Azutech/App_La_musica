@@ -40,9 +40,14 @@ export class ArtistApplicationRepository {
     });
   }
 
+  async findStageName(stageName: string): Promise<ArtistApplication> {
+    return await this.prisma.artistApplication.findFirst({
+      where: { stageName },
+    });
+  }
 
   async findDistroId(
-    distributorId: string | { userId: string },
+    distributorId: string,
     status?: ApplicationStatus,
   ): Promise<ArtistApplication | null> {
     const where: any = { distributorId };
@@ -56,6 +61,9 @@ export class ArtistApplicationRepository {
 
   async findAll(): Promise<ArtistApplication[]> {
     return this.prisma.artistApplication.findMany();
+  }
+  async findAllDistroApps(distributorId: string): Promise<ArtistApplication[]> {
+    return this.prisma.artistApplication.findMany({ where: { distributorId } });
   }
 
   async updateStatus(

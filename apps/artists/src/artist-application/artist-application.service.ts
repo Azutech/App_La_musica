@@ -17,9 +17,18 @@ export class ArtistApplicationService {
 
   async applyViaDistributor(dto: ApplyArtistDto) {
     const applyArtist = await this.appRepo.findDistroId(dto.distributorId);
-    if (applyArtist) {
+    if (!applyArtist) {
       throw new RpcException({
-        message: 'Applications already created',
+        message: 'Distro not found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    const checkStageName = await this.appRepo.findStageName(dto.stageName);
+
+    if (checkStageName) {
+      throw new RpcException({
+        message: 'Artist Name taken already',
         statusCode: HttpStatus.CONFLICT,
       });
     }
@@ -56,6 +65,16 @@ export class ArtistApplicationService {
     );
 
     return pendingApplications;
+  }
+
+  async distroApplications(distributorId: string) {
+    const apps = await this.appRepo.findAllDistroApps(distributorId);
+
+    if (apps.length === 0) {
+      return [];
+    }
+
+    return apps;
   }
 
   async findApprovedAllApplications() {
@@ -105,12 +124,12 @@ export class ArtistApplicationService {
 
     await this.appRepo.updateStatus(applicationId, ApplicationStatus.APPROVED);
 
-    const artist = await this.artistRepo.createArtist({
-      distributorId: application.distributorId,
-      stageName: application.stageName,
-      bio: application.bio,
-      genre: application.genre,
-    });
+    const artist = await this.artistRepo.createArtist(
+      application.stageName,
+      application.bio,
+      application.genre,
+      application.distributorId,
+    );
 
     return {
       message: 'Artist approved successfully',

@@ -23,15 +23,11 @@ export class ArtistService {
   }
   async getApplicationByDistributorId(applicationId: string) {
     try {
-      console.log('Service - Application ID:', applicationId);
       const result = await firstValueFrom(
         this.artistClient
           .send({ cmd: 'artist_get_application' }, applicationId)
           .pipe(timeout(20000)), // 10 s guard
       );
-
-            console.log('Service - XXX ID:', applicationId);
-
       return result;
     } catch (err: any) {
       // Nest already turned RPC exceptions into proper HTTP errors
@@ -41,10 +37,11 @@ export class ArtistService {
 
   async approveArtistApplication(applicationId: string) {
     try {
+      console.log('Service got application ID:', applicationId);
       const result = await firstValueFrom(
         this.artistClient
           .send(
-            { cmd: 'artist_approve_application_via_distributor' },
+            { cmd: 'approve_application' },
             applicationId,
           )
           .pipe(timeout(20000)), // 10 s guard

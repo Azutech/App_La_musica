@@ -4,6 +4,7 @@ import {
   Get,
   HttpStatus,
   Post,
+  Put,
   Query,
   Req,
   Res,
@@ -50,11 +51,11 @@ export class ArtistController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('approveApplication')
+  @Put('approveApplication')
   async approveArtistApplication(
     @Req() req: any,
     @Res() res: Response,
-    @Body('applicationId') applicationId: string,
+    @Query('applicationId') applicationId: string,
   ) {
     const approvedApp =
       await this.artistService.approveArtistApplication(applicationId);
@@ -64,11 +65,11 @@ export class ArtistController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('rejectApplication')
+  @Put('rejectApplication')
   async rejectArtistApplication(
     @Req() req: any,
     @Res() res: Response,
-    @Body('applicationId') applicationId: string,
+    @Query('applicationId') applicationId: string,
   ) {
     const rejectedApp =
       await this.artistService.rejectArtistApplication(applicationId);

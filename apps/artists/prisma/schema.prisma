@@ -10,7 +10,6 @@ datasource db {
 
 model Artist {
   id            String            @id @default(uuid())
-  userId        String            @unique               // from Auth microservice
   distributorId String?                           // optional
   distributor   Distributor?      @relation(fields: [distributorId], references: [id], onDelete: SetNull)
   isActive      Boolean           @default(false)
@@ -37,7 +36,6 @@ enum ArtistOriginType {
 
 model ArtistApplication {
   id            String   @id @default(uuid())
-  userId        String?
   stageName     String
   genre         String?
   bio           String?

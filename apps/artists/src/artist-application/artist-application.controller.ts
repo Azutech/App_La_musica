@@ -15,8 +15,10 @@ export class ArtistApplicationController {
   }
 
   @MessagePattern({ cmd: 'artist_get_application' })
-  async getUserApplication(@Payload() payload :{applicationId: string}) {
-    return await this.artistApplicationService.getApplicationId(payload.applicationId);
+  async getUserApplication(@Payload() payload: { applicationId: string }) {
+    return await this.artistApplicationService.getApplicationId(
+      payload.applicationId,
+    );
   }
   @MessagePattern({ cmd: 'pending_application' })
   async pendingApplication() {
@@ -31,7 +33,7 @@ export class ArtistApplicationController {
     return await this.artistApplicationService.findRejectedAllApplications();
   }
 
-  @MessagePattern({ cmd: 'artist_approve_application_via_distributor' })
+  @MessagePattern({ cmd: 'approve_application' })
   async approveArtistApplicationViaDistributor(applicationId: string) {
     return await this.artistApplicationService.approveArtistApplicationViaDistributor(
       applicationId,
@@ -42,6 +44,12 @@ export class ArtistApplicationController {
   async rejectApplication(applicationId: string) {
     return await this.artistApplicationService.rejectArtistApplicationViaDistributor(
       applicationId,
+    );
+  }
+  @MessagePattern({ cmd: 'all_artist_application' })
+  async allApplication(distributorId: string) {
+    return await this.artistApplicationService.rejectArtistApplicationViaDistributor(
+      distributorId,
     );
   }
 }
