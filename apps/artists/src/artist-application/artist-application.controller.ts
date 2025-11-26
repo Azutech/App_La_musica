@@ -52,6 +52,24 @@ export class ArtistApplicationController {
       distributorId,
     );
   }
+  @MessagePattern({ cmd: 'distro_rejected_application' })
+  async distroRejectedApplications(distributorId: string) {
+    return await this.artistApplicationService.distroRejectedApplications(
+      distributorId,
+    );
+  }
+  @MessagePattern({ cmd: 'distro_approved_application' })
+  async distroApprovedApplications(distributorId: string) {
+    return await this.artistApplicationService.distroApprovedApplications(
+      distributorId,
+    );
+  }
+  @MessagePattern({ cmd: 'distro_pending_application' })
+  async distroPendingApplications(distributorId: string) {
+    return await this.artistApplicationService.distroPendingApplications(
+      distributorId,
+    );
+  }
   @MessagePattern({ cmd: 'all_artist_application' })
   async allApplication(distributorId: string) {
     return await this.artistApplicationService.rejectArtistApplicationViaDistributor(

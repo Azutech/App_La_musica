@@ -83,6 +83,66 @@ export class ArtistApplicationService {
 
     return apps;
   }
+  async distroPendingApplications(id: string) {
+    const distro = await this.distributionRepository.findOne(id);
+    if (!distro) {
+      throw new RpcException({
+        message: 'Distributor not found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+    const apps = await this.appRepo.findAllDistroApps(distro.id);
+
+    if (apps.length === 0) {
+      return [];
+    }
+
+    const pendingApplications = apps.filter(
+      (app) => app.status === ApplicationStatus.PENDING,
+    );
+
+    return pendingApplications;
+  }
+  async distroApprovedApplications(id: string) {
+    const distro = await this.distributionRepository.findOne(id);
+    if (!distro) {
+      throw new RpcException({
+        message: 'Distributor not found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+    const apps = await this.appRepo.findAllDistroApps(distro.id);
+
+    if (apps.length === 0) {
+      return [];
+    }
+
+    const approvedApplications = apps.filter(
+      (app) => app.status === ApplicationStatus.APPROVED,
+    );
+
+    return approvedApplications;
+  }
+  async distroRejectedApplications(id: string) {
+    const distro = await this.distributionRepository.findOne(id);
+    if (!distro) {
+      throw new RpcException({
+        message: 'Distributor not found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+    const apps = await this.appRepo.findAllDistroApps(distro.id);
+
+    if (apps.length === 0) {
+      return [];
+    }
+
+    const rejectedApplications = apps.filter(
+      (app) => app.status === ApplicationStatus.REJECTED,
+    );
+
+    return rejectedApplications;
+  }
 
   async findApprovedAllApplications() {
     const applications = await this.appRepo.findAll();
