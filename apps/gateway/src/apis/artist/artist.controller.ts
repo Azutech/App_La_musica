@@ -78,7 +78,7 @@ export class ArtistController {
       .json({ message: 'Application approved', approvedApp });
   }
   @UseGuards(JwtAuthGuard)
-  @Get('applications/allDistroPendingApplications')
+  @Put('applications/allDistroPendingApplications')
   async pendingDistroApplications(
     @Req() req: any,
     @Res() res: Response,
@@ -92,7 +92,7 @@ export class ArtistController {
       .json({ message: 'Application approved', approvedApp });
   }
   @UseGuards(JwtAuthGuard)
-  @Get('applications/allDistroApprovedApplications')
+  @Put('applications/allDistroApprovedApplications')
   async approvedDistroApplications(
     @Req() req: any,
     @Res() res: Response,
@@ -106,7 +106,7 @@ export class ArtistController {
       .json({ message: 'Application approved', approvedApp });
   }
   @UseGuards(JwtAuthGuard)
-  @Get('applications/allDistroRejectedApplications')
+  @Put('applications/allDistroRejectedApplications')
   async rejectedDistroApplications(
     @Req() req: any,
     @Res() res: Response,
