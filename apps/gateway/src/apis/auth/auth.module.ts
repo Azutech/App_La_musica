@@ -6,7 +6,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CustomJwtModule } from 'src/guards/jwt/jwt.module';
 import { RedisClientService } from 'src/shared/redis-client.service';
 
-
 @Module({
   imports: [
     CustomJwtModule,
@@ -29,10 +28,13 @@ import { RedisClientService } from 'src/shared/redis-client.service';
     ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService,   {
+  providers: [
+    AuthService,
+    {
       provide: RedisClientService,
       inject: ['AUTH_SERVICE'],
       useFactory: (authClient) => new RedisClientService(authClient),
-    },],
+    },
+  ],
 })
 export class AuthModule {}

@@ -3,7 +3,12 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
 import { JwtService } from 'src/guards/jwt/jwt.service';
-import { CodeDto, CreateUserDto, LoginDto, OnboardUserDto } from './dtos/auth.dto';
+import {
+  CodeDto,
+  CreateUserDto,
+  LoginDto,
+  OnboardUserDto,
+} from './dtos/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -60,14 +65,15 @@ export class AuthService {
       );
 
       const authTokenParam = {
-        userId: result,
+        userId: result.userId,
+        role: result.role,
       };
 
       const token = this.jwtService.createEncryptedToken(authTokenParam); // ← Standard JWT
 
       return {
         auth: token,
-        message: 'sign up successful',
+        message: 'sign in successful',
       };
     } catch (err: any) {
       // Nest already turned RPC exceptions into proper HTTP errors

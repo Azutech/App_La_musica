@@ -21,15 +21,18 @@ export class DistributionController {
     return await this.distributionService.verification(loginData);
   }
   @MessagePattern({ cmd: 'resend_verification' })
-    async resendVerification(email: string) {
-      return await this.distributionService.resendVerification(email);
-    }
+  async resendVerification(email: string) {
+    return await this.distributionService.resendVerification(email);
+  }
 
   @MessagePattern({ cmd: 'distributor_dashboard' })
   async getDistributor(@Payload() payload: { distributorId: string }) {
-        const { distributorId } = payload;
+    const { distributorId } = payload;
 
     return await this.distributionService.dashboard(distributorId);
   }
-
+  @MessagePattern({ cmd: 'distributor_list' })
+  async getAllDistributors() {
+    return await this.distributionService.findAllDistributors();
+  }
 }

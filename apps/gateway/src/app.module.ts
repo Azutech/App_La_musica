@@ -18,7 +18,6 @@ import { ArtistModule } from './apis/artist/artist.module';
     AuthModule,
     DistributorModule,
     ArtistModule,
- 
   ],
   controllers: [AppController],
   providers: [

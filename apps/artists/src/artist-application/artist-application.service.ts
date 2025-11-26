@@ -1,44 +1,34 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
-import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { lastValueFrom } from 'rxjs';
+import { RpcException } from '@nestjs/microservices';
 import { ApplyArtistDto } from 'src/artist-application/dtos/applications.dto';
 import { ArtistApplicationRepository } from 'src/artist-application/repository/application.repository';
 import { ApplicationStatus } from './enums/enum.util';
 import { ArtistRepository } from 'src/artists/repository/artist.repository';
+import { DistributionRepository } from 'src/distribution/repository/distribution.repository';
 
 @Injectable()
 export class ArtistApplicationService {
   constructor(
     private appRepo: ArtistApplicationRepository,
-    // private authClient: ClientProxy,
+    private distributionRepository: DistributionRepository,
 
-  private artistRepo: ArtistRepository
+    private artistRepo: ArtistRepository,
   ) {}
 
-  
-  async applyViaUser(dto: ApplyArtistDto) {
-    const applyArtist = await this.appRepo.findUserAppsId(dto.userId);
-    if (applyArtist) {
+  async applyViaDistributor(dto: ApplyArtistDto) {
+    const applyArtist = await this.appRepo.findDistroId(dto.distributorId);
+    if (!applyArtist) {
       throw new RpcException({
-        message: 'Applications already created',
-        statusCode: HttpStatus.CONFLICT,
+        message: 'Distro not found',
+        statusCode: HttpStatus.NOT_FOUND,
       });
     }
 
-    const createApp = await this.appRepo.createApplication({
-      userId: dto.userId,
-      stageName: dto.stageName,
-      bio: dto.bio,
-      genre: dto.genre,
-    });
+    const checkStageName = await this.appRepo.findStageName(dto.stageName);
 
-    return createApp;
-  }
-  async applyViaDistributor(dto: ApplyArtistDto) {
-    const applyArtist = await this.appRepo.findDistroId(dto.distributorId);
-    if (applyArtist) {
+    if (checkStageName) {
       throw new RpcException({
-        message: 'Applications already created',
+        message: 'Artist Name taken already',
         statusCode: HttpStatus.CONFLICT,
       });
     }
@@ -52,8 +42,8 @@ export class ArtistApplicationService {
 
     return createApp;
   }
-  async getApplicationByUserId(userId: string) {
-    const application = await this.appRepo.findUserAppsId(userId);
+  async getApplicationId(applicationId: string) {
+    const application = await this.appRepo.findAppId(applicationId);
     if (!application) {
       throw new RpcException({
         message: 'Application not found',
@@ -63,19 +53,67 @@ export class ArtistApplicationService {
     return application;
   }
 
-  async getApplicationByDistributorId(distributorId: string) {
-    const application = await this.appRepo.findDistroId(distributorId);
-    if (!application) {
+  async findAllPendingApplications() {
+    const applications = await this.appRepo.findAll();
+
+    if (applications.length === 0) {
+      return [];
+    }
+
+    const pendingApplications = applications.filter(
+      (app) => app.status === ApplicationStatus.PENDING,
+    );
+
+    return pendingApplications;
+  }
+
+  async distroApplications(id: string) {
+    const distro = await this.distributionRepository.findOne(id);
+    if (!distro) {
       throw new RpcException({
-        message: 'Application not found',
+        message: 'Distributor not found',
         statusCode: HttpStatus.NOT_FOUND,
       });
     }
-    return application;
+    const apps = await this.appRepo.findAllDistroApps(distro.id);
+
+    if (apps.length === 0) {
+      return [];
+    }
+
+    return apps;
+  }
+
+  async findApprovedAllApplications() {
+    const applications = await this.appRepo.findAll();
+
+    if (applications.length === 0) {
+      return [];
+    }
+
+    const pendingApplications = applications.filter(
+      (app) => app.status === ApplicationStatus.APPROVED,
+    );
+
+    return pendingApplications;
+  }
+
+  async findRejectedAllApplications() {
+    const applications = await this.appRepo.findAll();
+
+    if (applications.length === 0) {
+      return [];
+    }
+
+    const pendingApplications = applications.filter(
+      (app) => app.status === ApplicationStatus.REJECTED,
+    );
+
+    return pendingApplications;
   }
 
   async approveArtistApplicationViaDistributor(applicationId: string) {
-       const application = await this.appRepo.findAppId(applicationId);
+    const application = await this.appRepo.findAppId(applicationId);
 
     if (!application) {
       throw new RpcException({
@@ -91,22 +129,22 @@ export class ArtistApplicationService {
       });
     }
 
-    await this.appRepo.updateStatus(applicationId, ApplicationStatus.APPROVED); 
+    await this.appRepo.updateStatus(applicationId, ApplicationStatus.APPROVED);
 
-      const artist = await this.artistRepo.createArtist({
-      distributorId: application.distributorId,
-      stageName: application.stageName,
-      bio: application.bio,
-      genre: application.genre,
-    });
+    const artist = await this.artistRepo.createArtist(
+      application.stageName,
+      application.bio,
+      application.genre,
+      application.distributorId,
+    );
 
-      return {
+    return {
       message: 'Artist approved successfully',
       artist,
     };
   }
   async rejectArtistApplicationViaDistributor(applicationId: string) {
-       const application = await this.appRepo.findAppId(applicationId);
+    const application = await this.appRepo.findAppId(applicationId);
 
     if (!application) {
       throw new RpcException({
@@ -124,56 +162,9 @@ export class ArtistApplicationService {
 
     await this.appRepo.updateStatus(applicationId, ApplicationStatus.REJECTED);
 
-      return {
+    return {
       message: 'Artist application rejected',
       application,
-    };
-  }
-
-  async approveArtistApplicationViaUser(applicationId: string) {
-    // Fetch the application
-    const application = await this.appRepo.findAppId(applicationId);
-
-    if (!application) {
-      throw new RpcException({
-        message: 'Application not found',
-        statusCode: HttpStatus.NOT_FOUND,
-      });
-    }
-
-    if (application.status === ApplicationStatus.APPROVED) {
-      throw new RpcException({
-        message: 'Application already approved',
-        statusCode: HttpStatus.CONFLICT,
-      });
-    }
-
-    // 1️⃣ Update the application status
-    await this.appRepo.updateStatus(applicationId, ApplicationStatus.APPROVED);
-
-    // 2️⃣ Create artist profile in this service
-    const artist = await this.artistRepo.createArtist({
-      userId: application.userId,
-      stageName: application.stageName,
-      bio: application.bio,
-      genre: application.genre,
-    });
-
-    // 3️⃣ Update user service to mark them as artist
-    // try {
-    //   await lastValueFrom(
-    //     this.authClient.send(
-    //       { cmd: 'user_promote_to_artist' },
-    //       { userId: application.userId, artistId: artist.id, role: 'artist' },
-    //     ),
-    //   );
-    // } catch (err) {
-    //   console.error('⚠️ Failed to notify user service:', err.message);
-    // }
-
-    return {
-      message: 'Artist approved successfully',
-      artist,
     };
   }
 }

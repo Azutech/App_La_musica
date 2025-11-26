@@ -7,20 +7,19 @@ import { ApplicationI } from '../interface/application.interface';
 export class ArtistApplicationRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-async createApplication(app: ApplicationI): Promise<ArtistApplication> {
-  const data: any = {
-    stageName: app.stageName,
-    bio: app.bio,
-    genre: app.genre,
-  };
+  async createApplication(app: ApplicationI): Promise<ArtistApplication> {
+    const data: any = {
+      stageName: app.stageName,
+      bio: app.bio,
+      genre: app.genre,
+    };
 
-  // Only include whichever exists
-  if (app.userId) data.userId = app.userId;
-  if (app.distributorId) data.distributorId = app.distributorId;
+    // Only include whichever exists
+    if (app.userId) data.userId = app.userId;
+    if (app.distributorId) data.distributorId = app.distributorId;
 
-  return this.prisma.artistApplication.create({ data });
-}
-
+    return this.prisma.artistApplication.create({ data });
+  }
 
   async findUserAppsId(
     userId: string | { userId: string },
@@ -35,14 +34,20 @@ async createApplication(app: ApplicationI): Promise<ArtistApplication> {
     return this.prisma.artistApplication.findFirst({ where });
   }
 
-  async findAppId(userId: string): Promise<ArtistApplication | null> {
+  async findAppId(id: string): Promise<ArtistApplication | null> {
     return await this.prisma.artistApplication.findFirst({
-      where: { id: userId },
+      where: { id },
+    });
+  }
+
+  async findStageName(stageName: string): Promise<ArtistApplication> {
+    return await this.prisma.artistApplication.findFirst({
+      where: { stageName },
     });
   }
 
   async findDistroId(
-    distributorId: string | { userId: string },
+    distributorId: string,
     status?: ApplicationStatus,
   ): Promise<ArtistApplication | null> {
     const where: any = { distributorId };
@@ -52,6 +57,13 @@ async createApplication(app: ApplicationI): Promise<ArtistApplication> {
     }
 
     return this.prisma.artistApplication.findFirst({ where });
+  }
+
+  async findAll(): Promise<ArtistApplication[]> {
+    return this.prisma.artistApplication.findMany();
+  }
+  async findAllDistroApps(distributorId: string): Promise<ArtistApplication[]> {
+    return this.prisma.artistApplication.findMany({ where: { distributorId } });
   }
 
   async updateStatus(

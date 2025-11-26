@@ -21,7 +21,9 @@ export class RedisClientService implements OnModuleInit, OnModuleDestroy {
     // health monitor: every 10s ping Redis microservice
     this.reconnectInterval = setInterval(async () => {
       try {
-        await firstValueFrom(this.client.send({ cmd: 'ping' }, {}).pipe(timeout(2000)));
+        await firstValueFrom(
+          this.client.send({ cmd: 'ping' }, {}).pipe(timeout(2000)),
+        );
         this.connected = true;
       } catch {
         this.connected = false;

@@ -3,7 +3,12 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
 import { JwtService } from 'src/guards/jwt/jwt.service';
-import { ApplyArtistDto, CodeDto, DistributionDto, LoginDto } from './dto/artist.dto';
+import {
+  ApplyArtistDto,
+  CodeDto,
+  DistributionDto,
+  LoginDto,
+} from './dto/artist.dto';
 @Injectable()
 export class DistributorService {
   constructor(
@@ -11,10 +16,8 @@ export class DistributorService {
     private readonly jwtService: JwtService,
   ) {}
 
-
   async addDistributor(distributionDto: DistributionDto) {
     try {
-
       const result = await firstValueFrom(
         this.distroClient
           .send({ cmd: 'add_distributor' }, distributionDto)
@@ -29,14 +32,13 @@ export class DistributorService {
   }
   async loginDistributor(loginDto: LoginDto) {
     try {
-
       const result = await firstValueFrom(
         this.distroClient
           .send({ cmd: 'login_distributor' }, loginDto)
           .pipe(timeout(20000)), // 10 s guard
       );
 
-           const authTokenParam = {
+      const authTokenParam = {
         userId: result,
       };
 
@@ -44,7 +46,7 @@ export class DistributorService {
 
       return {
         auth: token,
-        message: 'sign up successful',
+        message: 'sign in successful',
       };
     } catch (err: any) {
       // Nest already turned RPC exceptions into proper HTTP errors
@@ -53,7 +55,6 @@ export class DistributorService {
   }
   async verifyDistributor(loginDto: CodeDto) {
     try {
-
       const result = await firstValueFrom(
         this.distroClient
           .send({ cmd: 'verify_distributor' }, loginDto)
@@ -68,7 +69,6 @@ export class DistributorService {
   }
   async resendVerification(email: string) {
     try {
-
       const result = await firstValueFrom(
         this.distroClient
           .send({ cmd: 'resend_verification' }, email)
@@ -84,7 +84,6 @@ export class DistributorService {
 
   async dashboard(distributorId: string) {
     try {
-
       const result = await firstValueFrom(
         this.distroClient
           .send({ cmd: 'distributor_dashboard' }, { distributorId })
@@ -97,6 +96,18 @@ export class DistributorService {
       throw err;
     }
   }
+  async getAllDistributors() {
+    try {
+      const result = await firstValueFrom(
+        this.distroClient
+          .send({ cmd: 'distributor_list' }, {})
+          .pipe(timeout(20000)), // 10 s guard
+      );
 
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
 }
- 

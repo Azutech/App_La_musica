@@ -28,6 +28,9 @@ export class DistributionRepository {
   async findEmail(email: string): Promise<Distributor | null> {
     return await this.prisma.distributor.findFirst({ where: { email } });
   }
+  async findALLDistro(): Promise<Distributor[]> {
+    return await this.prisma.distributor.findMany();
+  }
 
   async update(id: string, distributorData: any): Promise<Distributor> {
     return this.prisma.distributor.update({

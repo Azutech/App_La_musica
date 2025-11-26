@@ -22,17 +22,19 @@ import { RedisClientService } from 'src/shared/redis-client.service';
             port: configService.get<number>('REDIS_PORT'),
             username: configService.get<string>('REDIS_USERNAME'),
             password: configService.get<string>('REDIS_PASSWORD'),
-
           },
         }),
       },
     ]),
   ],
   controllers: [ArtistController],
-  providers: [DistributorService, {
-        provide: RedisClientService,
-        inject: ['DISTRIBUTOR_SERVICE'],
-        useFactory: (distroClient) => new RedisClientService(distroClient),
-      },],
+  providers: [
+    DistributorService,
+    {
+      provide: RedisClientService,
+      inject: ['DISTRIBUTOR_SERVICE'],
+      useFactory: (distroClient) => new RedisClientService(distroClient),
+    },
+  ],
 })
 export class DistributorModule {}

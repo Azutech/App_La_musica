@@ -63,6 +63,15 @@ export class DistributionService {
     };
   }
 
+  async findAllDistributors() {
+    const distributors = await this.distributionRepository.findALLDistro();
+
+    if (distributors.length === 0) {
+      return [];
+    }
+    return distributors;
+  }
+
   async login(dto: LoginDto) {
     const { email, password } = dto;
 

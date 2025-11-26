@@ -10,7 +10,6 @@ datasource db {
 
 model Artist {
   id            String            @id @default(uuid())
-  userId        String            @unique               // from Auth microservice
   distributorId String?                           // optional
   distributor   Distributor?      @relation(fields: [distributorId], references: [id], onDelete: SetNull)
   isActive      Boolean           @default(false)
@@ -37,7 +36,6 @@ enum ArtistOriginType {
 
 model ArtistApplication {
   id            String   @id @default(uuid())
-  userId        String?
   stageName     String
   genre         String?
   bio           String?
@@ -54,7 +52,7 @@ model Distributor {
   name       String
   email      String   @unique
   password   String
-  isActive      Boolean           @default(false)
+  isActive   Boolean           @default(false)
   website    String?
   status     Status   @default(pending)
   artists    Artist[] // One distributor -> many artists
@@ -86,4 +84,45 @@ model Token {
   createdAt     DateTime @default(now())
   @@index([distributorId])
   @@index([email])
+}
+
+model Release {
+  id           String        @id @default(uuid())
+  title        String
+  releaseType  ReleaseType   // album | ep | single
+  upc          String?       @unique
+  coverArtUrl  String?
+  releaseDate  DateTime?
+  status       ReleaseStatus @default(DRAFT)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  tracks       Track[]       // one-to-many relation
+}
+
+model Track {
+  id              String      @id @default(uuid())
+  releaseId       String
+  release         Release     @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+  title           String
+  isrc            String?     @unique
+  position        Int?        // order within release (1, 2, 3, ...)
+  previewStart    Int?     // seconds from start
+  previewEnd      Int?     // seconds from start
+  durationSeconds Int?
+  explicit        Boolean     @default(false)
+  audioUrl        String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+enum ReleaseType {
+  album
+  ep
+  single
+}
+
+enum ReleaseStatus {
+  DRAFT
+  PENDING
+  RELEASED
 }

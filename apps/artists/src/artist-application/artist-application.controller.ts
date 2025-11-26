@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { ArtistApplicationService } from './artist-application.service';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { ApplyArtistDto } from './dtos/applications.dto';
 
 @Controller('artist-application')
@@ -9,35 +9,33 @@ export class ArtistApplicationController {
     private readonly artistApplicationService: ArtistApplicationService,
   ) {}
 
-  @MessagePattern({ cmd: 'artist_apply_user' })
-  async applyViaUser(data: ApplyArtistDto) {
-    return await this.artistApplicationService.applyViaUser(data);
-  }
   @MessagePattern({ cmd: 'artist_apply_distributor' })
   async applyViaDistributor(data: ApplyArtistDto) {
     return await this.artistApplicationService.applyViaDistributor(data);
   }
-  @MessagePattern({ cmd: 'artist_get_distributor_application' })
-  async getDistributorApplication(distributorId: string) {
-    return await this.artistApplicationService.getApplicationByDistributorId(
-      distributorId,
+
+  @MessagePattern({ cmd: 'artist_get_application' })
+  async getUserApplication(@Payload() payload: { applicationId: string }) {
+    return await this.artistApplicationService.getApplicationId(
+      payload.applicationId,
     );
   }
-  @MessagePattern({ cmd: 'artist_get_user_application ' })
-  async getUserApplication(distributorId: string) {
-    return await this.artistApplicationService.getApplicationByUserId(distributorId);
+  @MessagePattern({ cmd: 'pending_application' })
+  async pendingApplication() {
+    return await this.artistApplicationService.findAllPendingApplications();
+  }
+  @MessagePattern({ cmd: 'approved_application' })
+  async approvedApplications() {
+    return await this.artistApplicationService.findApprovedAllApplications();
+  }
+  @MessagePattern({ cmd: 'rejected_application' })
+  async rejectedApplications() {
+    return await this.artistApplicationService.findRejectedAllApplications();
   }
 
-  @MessagePattern({ cmd: 'artist_approve_application_via_distributor' })
+  @MessagePattern({ cmd: 'approve_application' })
   async approveArtistApplicationViaDistributor(applicationId: string) {
     return await this.artistApplicationService.approveArtistApplicationViaDistributor(
-      applicationId,
-    );
-  }
-
-  @MessagePattern({ cmd: 'artist_approve_application_via_user' })
-  async approveArtistApplicationViaUser(applicationId: string) {
-    return await this.artistApplicationService.approveArtistApplicationViaUser(
       applicationId,
     );
   }
@@ -47,5 +45,17 @@ export class ArtistApplicationController {
     return await this.artistApplicationService.rejectArtistApplicationViaDistributor(
       applicationId,
     );
-  }   
+  }
+  @MessagePattern({ cmd: 'distro_application' })
+  async distroApplications(distributorId: string) {
+    return await this.artistApplicationService.distroApplications(
+      distributorId,
+    );
+  }
+  @MessagePattern({ cmd: 'all_artist_application' })
+  async allApplication(distributorId: string) {
+    return await this.artistApplicationService.rejectArtistApplicationViaDistributor(
+      distributorId,
+    );
+  }
 }
