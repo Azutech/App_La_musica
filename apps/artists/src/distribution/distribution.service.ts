@@ -8,7 +8,7 @@ import {
   LoginDto,
 } from './dtos/distribution.dto';
 import { RpcException } from '@nestjs/microservices';
-import { Status } from './enum/enum.utils';
+import { BusinessType, Status } from './enum/enum.utils';
 import * as moment from 'moment';
 import { TokenRepository } from './repository/token.repository';
 import { DistributionProfileRepository } from './repository/distributionProfile.repository';
@@ -175,6 +175,7 @@ export class DistributionService {
   }
 
   async createdistroProfile(dto: DistributionProfileDto) {
+    const { businessType } = dto;
     const user = await this.distributionRepository.findOne(dto.distributorId);
 
     if (!user) {
@@ -193,6 +194,42 @@ export class DistributionService {
         statusCode: HttpStatus.CONFLICT,
       });
     }
+
+    const validReport = Object.values(BusinessType);
+    if (!validReport.includes(businessType as BusinessType)) {
+      throw new RpcException({
+        message: `Invalid report type. Must be one of: [${validReport.join(', ')}]`,
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
+    }
+
+    const [legalNameConflict, regNumberConflict, taxIdConflict] = await Promise.all([
+    dto.legalName
+      ? this.distributionProfileRepository.findByLegalName(dto.legalName)
+      : null,
+
+    dto.registrationNumber
+      ? this.distributionProfileRepository.findByRegistrationNumber(dto.registrationNumber)
+      : null,
+
+    dto.taxId
+      ? this.distributionProfileRepository.findByTaxId(dto.taxId)
+      : null,
+  ]);
+
+  // 3. Build conflict message
+  const conflicts: string[] = [];
+  if (legalNameConflict) conflicts.push('Legal name');
+  if (regNumberConflict) conflicts.push('Registration number');
+  if (taxIdConflict) conflicts.push('Tax ID');
+
+  if (conflicts.length > 0) {
+    throw new RpcException({
+      message: `${conflicts.join(', ')} already in use by another distributor`,
+      statusCode: HttpStatus.CONFLICT,
+      data: { conflicts },
+    });
+  }
 
     const profileData: DistributionProfileDto = {
       distributorId: dto.distributorId,
@@ -228,6 +265,7 @@ export class DistributionService {
   }
 
   async updateProfile(dto: DistributionProfileDto) {
+    const { businessType } = dto;
     const existing = await this.distributionProfileRepository.findOne(
       dto.distributorId,
     );
@@ -235,6 +273,14 @@ export class DistributionService {
       throw new RpcException({
         message: 'Distributor not Found',
         statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    const validReport = Object.values(BusinessType);
+    if (!validReport.includes(businessType as BusinessType)) {
+      throw new RpcException({
+        message: `Invalid report type. Must be one of: [${validReport.join(', ')}]`,
+        statusCode: HttpStatus.BAD_REQUEST,
       });
     }
 

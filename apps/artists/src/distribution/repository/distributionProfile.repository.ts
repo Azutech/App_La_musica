@@ -31,15 +31,32 @@ export class DistributionProfileRepository {
   }
 
   async updateProfile(distributorId: string, dto: DistributionProfileI) {
+    //     const dtoWithoutId = { ...dto };
+    // delete dtoWithoutId.distributorId;
     return this.prisma.distributorProfile.update({
       where: { distributorId },
-      data: { ...dto },
+      data: dto,
     });
   }
 
   async findOne(distributorId: string): Promise<DistributorProfile | null> {
     return await this.prisma.distributorProfile.findFirst({
       where: { distributorId },
+    });
+  }
+  async findByLegalName(legalName: string): Promise<DistributorProfile | null> {
+    return await this.prisma.distributorProfile.findFirst({
+      where: { legalName },
+    });
+  }
+  async findByRegistrationNumber(registrationNumber: string): Promise<DistributorProfile | null> {
+    return await this.prisma.distributorProfile.findFirst({
+      where: { registrationNumber },
+    });
+  }
+  async findByTaxId(taxId: string): Promise<DistributorProfile | null> {
+    return await this.prisma.distributorProfile.findFirst({
+      where: { taxId },
     });
   }
 
