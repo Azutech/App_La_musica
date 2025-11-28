@@ -1,16 +1,23 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { hashSync, genSaltSync, compareSync } from 'bcrypt';
 import { DistributionRepository } from './repository/distribution.repository';
-import { CodeDto, DistributionDto, LoginDto } from './dtos/distribution.dto';
+import {
+  CodeDto,
+  DistributionDto,
+  DistributionProfileDto,
+  LoginDto,
+} from './dtos/distribution.dto';
 import { RpcException } from '@nestjs/microservices';
 import { Status } from './enum/enum.utils';
 import * as moment from 'moment';
 import { TokenRepository } from './repository/token.repository';
+import { DistributionProfileRepository } from './repository/distributionProfile.repository';
 
 @Injectable()
 export class DistributionService {
   constructor(
     private distributionRepository: DistributionRepository,
+    private distributionProfileRepository: DistributionProfileRepository,
     private tokenRepo: TokenRepository,
   ) {}
 
@@ -165,6 +172,78 @@ export class DistributionService {
     return {
       token: token.code,
     };
+  }
+
+  async createdistroProfile(dto: DistributionProfileDto) {
+    const user = await this.distributionRepository.findOne(dto.distributorId);
+
+    if (!user) {
+      throw new RpcException({
+        message: 'Distributor not found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+    const checkDistro = await this.distributionProfileRepository.findOne(
+      dto.distributorId,
+    );
+
+    if (checkDistro) {
+      throw new RpcException({
+        message: 'Distributor already created profile',
+        statusCode: HttpStatus.CONFLICT,
+      });
+    }
+
+    const profileData: DistributionProfileDto = {
+      distributorId: dto.distributorId,
+      legalName: dto.legalName,
+      businessType: dto.businessType,
+      registrationNumber: dto.registrationNumber,
+      taxId: dto.taxId,
+      country: dto.country,
+      state: dto.state,
+      city: dto.city,
+      address: dto.address,
+      website: dto.website,
+      verificationScore: dto.verificationScore ?? 0, // default if not provided
+    };
+
+    const addProfile =
+      await this.distributionProfileRepository.create(profileData);
+
+    return addProfile;
+  }
+
+  async viewProfile(distributorId: string) {
+    const existing =
+      await this.distributionProfileRepository.findOne(distributorId);
+    if (!existing) {
+      throw new RpcException({
+        message: 'Distributor not Found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    return existing;
+  }
+
+  async updateProfile(dto: DistributionProfileDto) {
+    const existing = await this.distributionProfileRepository.findOne(
+      dto.distributorId,
+    );
+    if (!existing) {
+      throw new RpcException({
+        message: 'Distributor not Found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    const newProfile = await this.distributionProfileRepository.updateProfile(
+      existing.distributorId,
+      dto,
+    );
+
+    return newProfile;
   }
 
   private async createToken(tokenDto: {

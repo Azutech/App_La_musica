@@ -1,7 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { DistributionService } from './distribution.service';
-import { CodeDto, DistributionDto, LoginDto } from './dtos/distribution.dto';
+import {
+  CodeDto,
+  DistributionDto,
+  DistributionProfileDto,
+  LoginDto,
+} from './dtos/distribution.dto';
 
 @Controller('distribution')
 export class DistributionController {
@@ -34,5 +39,19 @@ export class DistributionController {
   @MessagePattern({ cmd: 'distributor_list' })
   async getAllDistributors() {
     return await this.distributionService.findAllDistributors();
+  }
+  @MessagePattern({ cmd: 'createdistroProfile' })
+  async createdistroProfile(distributionProfileDto: DistributionProfileDto) {
+    return await this.distributionService.createdistroProfile(
+      distributionProfileDto,
+    );
+  }
+  @MessagePattern({ cmd: 'updatedistroProfile' })
+  async updateProfile(distributionProfileDto: DistributionProfileDto) {
+    return await this.distributionService.updateProfile(distributionProfileDto);
+  }
+  @MessagePattern({ cmd: 'viewProfile' })
+  async viewProfile(distributorId: string) {
+    return await this.distributionService.viewProfile(distributorId);
   }
 }

@@ -13,3 +13,17 @@ export class LoginDto {
 export class CodeDto {
   code: number;
 }
+
+export class DistributionProfileDto {
+  distributorId: string;
+  legalName: string;
+  businessType: string;
+  registrationNumber: string;
+  taxId: string;
+  country: string;
+  state: string;
+  address: string;
+  website: string;
+  city: string;
+  verificationScore: number;
+}
