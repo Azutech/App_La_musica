@@ -12,7 +12,12 @@ import {
 } from '@nestjs/common';
 import { DistributorService } from './distributors.service';
 import { JwtAuthGuard } from 'src/guards/jwt/jwt.guard';
-import { ApplyArtistDto, DistributionDto, LoginDto } from './dto/artist.dto';
+import {
+  ApplyArtistDto,
+  DistributionDto,
+  DistributionProfileDto,
+  LoginDto,
+} from './dto/artist.dto';
 import { Response } from 'express';
 import { CodeDto } from 'src/apis/auth/dtos/auth.dto';
 import { RoleGuard } from 'src/guards/role.guard';
@@ -78,5 +83,42 @@ export class ArtistController {
     return res
       .status(HttpStatus.OK)
       .json({ message: 'Distributor list retrieved successfully', data: id });
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('updateProfile')
+  async updateProfile(
+    @Req() req: any,
+    @Res() res: Response,
+    @Body() distributionProfileDto: DistributionProfileDto,
+  ) {
+    distributionProfileDto.distributorId = req.user.userId;
+    const id = await this.distributorService.updateProfile(
+      distributionProfileDto,
+    );
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: 'Profile added successfully', data: id });
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('addProfile')
+  async addProfile(
+    @Req() req: any,
+    @Res() res: Response,
+    @Body() distributionProfileDto: DistributionProfileDto,
+  ) {
+    distributionProfileDto.distributorId = req.user.userId;
+    const id = await this.distributorService.addProfile(distributionProfileDto);
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: 'Profile updated successfully', data: id });
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('view-Profile')
+  async viewProfile(@Req() req: any, @Res() res: Response) {
+    const distributionId = req.user.userId;
+    const id = await this.distributorService.viewProfile(distributionId);
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: 'Profile User view successfully', data: id });
   }
 }
