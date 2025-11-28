@@ -39,6 +39,10 @@ model ArtistApplication {
   stageName     String
   genre         String?
   bio           String?
+  country       String
+  socialLink    String?
+  portfolioLink String?
+  documentUrl   String?
   adminNote     String?
   distributorId String?                           // optional
   distributor   Distributor? @relation(fields: [distributorId], references: [id], onDelete: SetNull)
@@ -56,10 +60,14 @@ model Distributor {
   website    String?
   status     Status   @default(pending)
   artists    Artist[] // One distributor -> many artists
+  profile DistributorProfile?
+  documents DistributorDocument[]
+  ubos DistributorUbo[]
+  verificationChecks VerificationCheck[]
+  payoutAccounts PayoutAccount[]
+  tokens             Token[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  artistApplications ArtistApplication[]
-  tokens             Token[]
 }
 
 enum Status {
@@ -115,6 +123,95 @@ model Track {
   updatedAt       DateTime    @updatedAt
 }
 
+
+model DistributorProfile {
+  id String     @id @default(uuid())
+  distributor   Distributor @relation(fields: [distributorId], references: [id])
+  distributorId String @unique
+  legalName     String?
+  businessType  String?
+  registrationNumber String?
+  taxId         String?
+  country       String?
+  state         String?
+  city          String?
+  address       String?
+  website       String?
+  isVerified    Boolean @default(false)
+  verificationScore Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model DistributorUbo {
+    id String     @id @default(uuid())
+    distributor   Distributor @relation(fields: [distributorId], references: [id])
+    distributorId String
+    firstName     String
+    lastName      String
+    email         String?
+    phone         String?
+    nationality   String?
+    idType        IdType @default(OTHER)
+    idNumber      String?
+    idDocumentUrl String?
+    ownershipPercentage Decimal @db.Decimal(5,2)
+    isVerified Boolean @default(false)
+    isSignatory Boolean @default(false)
+    createdAt DateTime @default(now())
+
+
+    @@index([distributorId])
+}
+
+model DistributorDocument {
+  id String        @id @default(uuid())
+  distributor      Distributor @relation(fields: [distributorId], references: [id])
+  distributorId    String
+  docType          String
+  docUrl           String
+  docHash          String
+  status           DocStatus @default(PENDING)
+  rejectionReason  String?
+  mimeType         String?
+  size             Int?
+  uploadedAt       DateTime @default(now())
+  @@index([distributorId])
+  @@index([docHash])
+}
+
+
+model VerificationCheck {
+  id String     @id @default(uuid())
+  distributor   Distributor @relation(fields: [distributorId], references: [id])
+  distributorId String
+  checkType     CheckType
+  status        CheckStatus
+  score         Int?
+  details       Json?
+  createdAt     DateTime @default(now())
+  @@index([distributorId])
+  @@index([checkType, status])
+}
+
+
+model PayoutAccount {
+  id String @id @default(uuid())
+  distributor Distributor @relation(fields: [distributorId], references: [id])
+  distributorId String
+  accountName String
+  accountNumber String
+  bankName String?
+  bankCode String?
+  currency String @default("USD")
+  isVerified Boolean @default(false)
+  verificationMethod VerificationMethod?
+  createdAt DateTime @default(now())
+  @@index([distributorId])
+  @@unique([accountNumber, bankCode])
+}
+
 enum ReleaseType {
   album
   ep
@@ -125,4 +222,63 @@ enum ReleaseStatus {
   DRAFT
   PENDING
   RELEASED
+}
+
+enum AccountType {
+  LABEL
+  AGGREGATOR
+  PUBLISHER
+  INDIE
+}
+
+
+enum OnboardingStatus {
+  PENDING
+  IN_REVIEW
+  APPROVED
+  REJECTED
+}
+
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+
+enum DocStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+
+enum CheckType {
+  AML
+  OFAC
+  DUPLICATE
+  IDENTITY
+  DOCUMENT
+}
+
+
+enum CheckStatus {
+  PASSED
+  FAILED
+  MANUAL_REVIEW
+}
+
+
+enum VerificationMethod {
+  MICRO_DEPOSIT
+  API
+  MANUAL
+}
+
+enum IdType {
+  PASSPORT
+  NATIONAL_ID
+  DRIVER_LICENSE
+  OTHER
 }
