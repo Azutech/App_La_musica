@@ -39,7 +39,7 @@ model ArtistApplication {
   stageName     String
   genre         String?
   bio           String?
-  country       String
+  country       String?
   socialLink    String?
   portfolioLink String?
   documentUrl   String?
@@ -60,12 +60,13 @@ model Distributor {
   website    String?
   status     Status   @default(pending)
   artists    Artist[] // One distributor -> many artists
-  profile DistributorProfile?
-  documents DistributorDocument[]
-  ubos DistributorUbo[]
+  artistApplications ArtistApplication[]  // <-- ADD THIS LINE
+  profile     DistributorProfile?
+  documents   DistributorDocument[]
+  ubos        DistributorUbo[]
   verificationChecks VerificationCheck[]
   payoutAccounts PayoutAccount[]
-  tokens             Token[]
+  tokens      Token[]
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
