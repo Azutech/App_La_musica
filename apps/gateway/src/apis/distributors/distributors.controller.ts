@@ -83,9 +83,9 @@ export class ArtistController {
     return res
       .status(HttpStatus.OK)
       .json({ message: 'Distributor list retrieved successfully', data: id });
-  }
+  } 
   @UseGuards(JwtAuthGuard)
-  @Get('updateProfile')
+  @Put('updateProfile')
   async updateProfile(
     @Req() req: any,
     @Res() res: Response,
@@ -100,7 +100,7 @@ export class ArtistController {
       .json({ message: 'Profile added successfully', data: id });
   }
   @UseGuards(JwtAuthGuard)
-  @Get('addProfile')
+  @Post('addProfile')
   async addProfile(
     @Req() req: any,
     @Res() res: Response,

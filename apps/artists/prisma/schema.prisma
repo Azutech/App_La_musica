@@ -130,7 +130,7 @@ model DistributorProfile {
   distributor   Distributor @relation(fields: [distributorId], references: [id])
   distributorId String @unique
   legalName     String?
-  businessType  String?
+  businessType  BusinessType?
   registrationNumber String?
   taxId         String?
   country       String?
@@ -281,5 +281,17 @@ enum IdType {
   PASSPORT
   NATIONAL_ID
   DRIVER_LICENSE
+  OTHER
+}
+
+
+enum BusinessType {
+  LABEL
+  AGGREGATOR
+  PUBLISHER
+  INDIE
+  MANAGEMENT
+  DISTRIBUTION_COMPANY
+  SERVICE_PROVIDER
   OTHER
 }
