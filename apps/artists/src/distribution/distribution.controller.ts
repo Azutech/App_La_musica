@@ -5,6 +5,7 @@ import {
   CodeDto,
   DistributionDto,
   DistributionProfileDto,
+  DistributionUboDto,
   LoginDto,
 } from './dtos/distribution.dto';
 
@@ -44,6 +45,12 @@ export class DistributionController {
   async createdistroProfile(distributionProfileDto: DistributionProfileDto) {
     return await this.distributionService.createdistroProfile(
       distributionProfileDto,
+    );
+  }
+  @MessagePattern({ cmd: 'createdistroUbo' })
+  async createUboProfile(distributionUboDto: DistributionUboDto) {
+    return await this.distributionService.createUboProfile(
+      distributionUboDto,
     );
   }
   @MessagePattern({ cmd: 'updatedistroProfile' })

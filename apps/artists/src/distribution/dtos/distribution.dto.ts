@@ -28,8 +28,6 @@ export class DistributionProfileDto {
   verificationScore: number;
 }
 
-
-
 export class DistributionUboDto {
   distributorId: string;
   firstName: string;

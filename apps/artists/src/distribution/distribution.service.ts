@@ -267,7 +267,6 @@ export class DistributionService {
       });
     }
 
-
     const validIdtype = Object.values(IdType);
     if (!validIdtype.includes(idType as IdType)) {
       throw new RpcException({
@@ -276,19 +275,15 @@ export class DistributionService {
       });
     }
 
-    const [emailConflict, phoneConflict, ] =
-      await Promise.all([
-        dto.email
-          ? this.distributionProfileRepository.findByLegalName(dto.email)
-          : null,
+    const [emailConflict, phoneConflict] = await Promise.all([
+      dto.email
+        ? this.distributionProfileRepository.findByLegalName(dto.email)
+        : null,
 
-        dto.phone
-          ? this.distributionProfileRepository.findByRegistrationNumber(
-              dto.phone,
-            )
-          : null,
-
-      ]);
+      dto.phone
+        ? this.distributionProfileRepository.findByRegistrationNumber(dto.phone)
+        : null,
+    ]);
 
     // 3. Build conflict message
     const conflicts: string[] = [];
@@ -310,14 +305,13 @@ export class DistributionService {
       lastName: dto.lastName,
       phone: dto.phone,
       nationality: dto.nationality,
-     idType: dto.idType,
+      idType: dto.idType,
       idNumber: dto.idNumber,
       idDocumentUrl: dto.idDocumentUrl,
       ownershipPercentage: dto.ownershipPercentage ?? 0, // default if not provided
     };
 
-    const addProfile =
-      await this.distributionUboRepository.create(profileData);
+    const addProfile = await this.distributionUboRepository.create(profileData);
 
     return addProfile;
   }
