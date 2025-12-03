@@ -5,19 +5,22 @@ import {
   CodeDto,
   DistributionDto,
   DistributionProfileDto,
+  DistributionUboDto,
   LoginDto,
 } from './dtos/distribution.dto';
 import { RpcException } from '@nestjs/microservices';
-import { BusinessType, Status } from './enum/enum.utils';
+import { BusinessType, IdType, Status } from './enum/enum.utils';
 import * as moment from 'moment';
 import { TokenRepository } from './repository/token.repository';
 import { DistributionProfileRepository } from './repository/distributionProfile.repository';
+import { DistributionUboRepository } from './repository/distributionUbo.repository';
 
 @Injectable()
 export class DistributionService {
   constructor(
     private distributionRepository: DistributionRepository,
     private distributionProfileRepository: DistributionProfileRepository,
+    private distributionUboRepository: DistributionUboRepository,
     private tokenRepo: TokenRepository,
   ) {}
 
@@ -250,6 +253,71 @@ export class DistributionService {
 
     const addProfile =
       await this.distributionProfileRepository.create(profileData);
+
+    return addProfile;
+  }
+  async createUboProfile(dto: DistributionUboDto) {
+    const { idType } = dto;
+    const user = await this.distributionRepository.findOne(dto.distributorId);
+
+    if (!user) {
+      throw new RpcException({
+        message: 'Distributor not found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+
+
+    const validIdtype = Object.values(IdType);
+    if (!validIdtype.includes(idType as IdType)) {
+      throw new RpcException({
+        message: `Invalid report type. Must be one of: [${validIdtype.join(', ')}]`,
+        statusCode: HttpStatus.BAD_REQUEST,
+      });
+    }
+
+    const [emailConflict, phoneConflict, ] =
+      await Promise.all([
+        dto.email
+          ? this.distributionProfileRepository.findByLegalName(dto.email)
+          : null,
+
+        dto.phone
+          ? this.distributionProfileRepository.findByRegistrationNumber(
+              dto.phone,
+            )
+          : null,
+
+      ]);
+
+    // 3. Build conflict message
+    const conflicts: string[] = [];
+    if (emailConflict) conflicts.push('Email');
+    if (phoneConflict) conflicts.push('Phone number');
+
+    if (conflicts.length > 0) {
+      throw new RpcException({
+        message: `${conflicts.join(', ')} already in use by another ubo`,
+        statusCode: HttpStatus.CONFLICT,
+        data: { conflicts },
+      });
+    }
+
+    const profileData: DistributionUboDto = {
+      distributorId: dto.distributorId,
+      email: dto.email,
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      phone: dto.phone,
+      nationality: dto.nationality,
+     idType: dto.idType,
+      idNumber: dto.idNumber,
+      idDocumentUrl: dto.idDocumentUrl,
+      ownershipPercentage: dto.ownershipPercentage ?? 0, // default if not provided
+    };
+
+    const addProfile =
+      await this.distributionUboRepository.create(profileData);
 
     return addProfile;
   }

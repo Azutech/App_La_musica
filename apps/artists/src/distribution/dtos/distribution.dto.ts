@@ -27,3 +27,18 @@ export class DistributionProfileDto {
   city: string;
   verificationScore: number;
 }
+
+
+
+export class DistributionUboDto {
+  distributorId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  nationality: string;
+  idType: string;
+  idNumber: string;
+  idDocumentUrl: string;
+  ownershipPercentage: number;
+}
