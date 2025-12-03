@@ -18,3 +18,14 @@ export interface DistributionProfileI {
   city: string;
   verificationScore: number;
 }
+export interface DistributionUbo {
+  distributorId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  nationality: string;
+  idType: string;
+  idNumber: string;
+  idDocumentUrl: string;
+}

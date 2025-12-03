@@ -203,33 +203,36 @@ export class DistributionService {
       });
     }
 
-    const [legalNameConflict, regNumberConflict, taxIdConflict] = await Promise.all([
-    dto.legalName
-      ? this.distributionProfileRepository.findByLegalName(dto.legalName)
-      : null,
+    const [legalNameConflict, regNumberConflict, taxIdConflict] =
+      await Promise.all([
+        dto.legalName
+          ? this.distributionProfileRepository.findByLegalName(dto.legalName)
+          : null,
 
-    dto.registrationNumber
-      ? this.distributionProfileRepository.findByRegistrationNumber(dto.registrationNumber)
-      : null,
+        dto.registrationNumber
+          ? this.distributionProfileRepository.findByRegistrationNumber(
+              dto.registrationNumber,
+            )
+          : null,
 
-    dto.taxId
-      ? this.distributionProfileRepository.findByTaxId(dto.taxId)
-      : null,
-  ]);
+        dto.taxId
+          ? this.distributionProfileRepository.findByTaxId(dto.taxId)
+          : null,
+      ]);
 
-  // 3. Build conflict message
-  const conflicts: string[] = [];
-  if (legalNameConflict) conflicts.push('Legal name');
-  if (regNumberConflict) conflicts.push('Registration number');
-  if (taxIdConflict) conflicts.push('Tax ID');
+    // 3. Build conflict message
+    const conflicts: string[] = [];
+    if (legalNameConflict) conflicts.push('Legal name');
+    if (regNumberConflict) conflicts.push('Registration number');
+    if (taxIdConflict) conflicts.push('Tax ID');
 
-  if (conflicts.length > 0) {
-    throw new RpcException({
-      message: `${conflicts.join(', ')} already in use by another distributor`,
-      statusCode: HttpStatus.CONFLICT,
-      data: { conflicts },
-    });
-  }
+    if (conflicts.length > 0) {
+      throw new RpcException({
+        message: `${conflicts.join(', ')} already in use by another distributor`,
+        statusCode: HttpStatus.CONFLICT,
+        data: { conflicts },
+      });
+    }
 
     const profileData: DistributionProfileDto = {
       distributorId: dto.distributorId,
