@@ -49,9 +49,13 @@ export class DistributionController {
   }
   @MessagePattern({ cmd: 'createdistroUbo' })
   async createUboProfile(distributionUboDto: DistributionUboDto) {
-    return await this.distributionService.createUboProfile(
-      distributionUboDto,
-    );
+    return await this.distributionService.createUboProfile(distributionUboDto);
+  }
+  @MessagePattern({ cmd: 'viewdistroUbo' })
+  async getDistributorUbos(@Payload() payload: { distributorId: string }) {
+    const { distributorId } = payload;
+
+    return await this.distributionService.viewUbos(distributorId);
   }
   @MessagePattern({ cmd: 'updatedistroProfile' })
   async updateProfile(distributionProfileDto: DistributionProfileDto) {

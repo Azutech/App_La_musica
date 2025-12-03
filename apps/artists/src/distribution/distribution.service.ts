@@ -329,6 +329,25 @@ export class DistributionService {
     return existing;
   }
 
+  async viewUbos(distributorId: string) {
+    const findDistro = await this.distributionRepository.findOne(distributorId);
+
+    if (!findDistro) {
+      throw new RpcException({
+        message: 'Distributor not Found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+    const existing =
+      await this.distributionUboRepository.findDistroUbos(distributorId);
+
+    if (existing.length === 0) {
+      return [];
+    }
+
+    return existing;
+  }
+
   async updateProfile(dto: DistributionProfileDto) {
     const { businessType } = dto;
     const existing = await this.distributionProfileRepository.findOne(

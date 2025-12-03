@@ -8,6 +8,7 @@ import {
   CodeDto,
   DistributionDto,
   DistributionProfileDto,
+  DistributionUboDto,
   LoginDto,
 } from './dto/artist.dto';
 @Injectable()
@@ -139,11 +140,42 @@ export class DistributorService {
       throw err;
     }
   }
+  
   async viewProfile(distributorId: string) {
     try {
       const result = await firstValueFrom(
         this.distroClient
           .send({ cmd: 'viewProfile' }, distributorId)
+          .pipe(timeout(20000)), // 10 s guard
+      );
+
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
+
+  async createdistroUbo(distributionUboDto: DistributionUboDto) {
+    try {
+      const result = await firstValueFrom(
+        this.distroClient
+          .send({ cmd: 'createdistroUbo' }, distributionUboDto)
+          .pipe(timeout(20000)), // 10 s guard
+      );
+
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
+
+  async viewdistroUbo(distributorId: string) {
+    try {
+      const result = await firstValueFrom(
+        this.distroClient
+          .send({ cmd: 'viewdistroUbo' }, distributorId)
           .pipe(timeout(20000)), // 10 s guard
       );
 

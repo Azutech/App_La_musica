@@ -16,6 +16,7 @@ import {
   ApplyArtistDto,
   DistributionDto,
   DistributionProfileDto,
+  DistributionUboDto,
   LoginDto,
 } from './dto/artist.dto';
 import { Response } from 'express';
@@ -120,5 +121,28 @@ export class ArtistController {
     return res
       .status(HttpStatus.OK)
       .json({ message: 'Profile User view successfully', data: id });
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get('view-DistroUbo')
+  async viewdistroUbo(@Req() req: any, @Res() res: Response) {
+    const distributionId = req.user.userId;
+    const id = await this.distributorService.viewdistroUbo(distributionId);
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: 'User Ubo view successfully', data: id });
+  }
+
+    @UseGuards(JwtAuthGuard)
+  @Post('createdistroUbo')
+  async createdistroUbo(
+    @Req() req: any,
+    @Res() res: Response,
+    @Body() distributionUboDto: DistributionUboDto,
+  ) {
+    distributionUboDto.distributorId = req.user.userId;
+    const id = await this.distributorService.createdistroUbo(distributionUboDto);
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: 'Profile updated successfully', data: id });
   }
 }

@@ -27,6 +27,11 @@ export class DistributionUboRepository {
   async findAll(): Promise<DistributorUbo[]> {
     return this.prisma.distributorUbo.findMany();
   }
+  async findDistroUbos(distributorId: string): Promise<DistributorUbo[]> {
+    return this.prisma.distributorUbo.findMany({
+      where: { distributorId },
+    });
+  }
 
   async updateProfile(distributorId: string, dto: DistributionUboI) {
     return this.prisma.distributorUbo.update({
