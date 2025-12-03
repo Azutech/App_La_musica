@@ -148,13 +148,13 @@ model DistributorProfile {
 model DistributorUbo {
     id String     @id @default(uuid())
     distributor   Distributor @relation(fields: [distributorId], references: [id])
-    distributorId String
+    distributorId String @unique
     firstName     String
     lastName      String
     email         String?
     phone         String?
     nationality   String?
-    idType        IdType @default(OTHER)
+    idType        String?
     idNumber      String?
     idDocumentUrl String?
     ownershipPercentage Decimal @db.Decimal(5,2)
@@ -277,11 +277,6 @@ enum VerificationMethod {
   MANUAL
 }
 
-enum IdType {
-  PASSPORT
-  NATIONAL_ID
-  DRIVER_LICENSE
-  OTHER
-}
+
 
 

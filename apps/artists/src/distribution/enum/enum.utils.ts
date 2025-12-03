@@ -14,3 +14,10 @@ export enum BusinessType {
   SERVICE_PROVIDER = 'service_provider',
   OTHER = 'other',
 }
+
+export enum IdType {
+  PASSPORT = 'password',
+  NATIONAL_ID = 'national_Id',
+  DRIVER_LICENSE = 'driver_license',
+  OTHER = 'other',
+}

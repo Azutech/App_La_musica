@@ -31,8 +31,6 @@ export class DistributionProfileRepository {
   }
 
   async updateProfile(distributorId: string, dto: DistributionProfileI) {
-    //     const dtoWithoutId = { ...dto };
-    // delete dtoWithoutId.distributorId;
     return this.prisma.distributorProfile.update({
       where: { distributorId },
       data: dto,

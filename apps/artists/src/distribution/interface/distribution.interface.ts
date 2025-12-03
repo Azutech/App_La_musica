@@ -18,7 +18,7 @@ export interface DistributionProfileI {
   city: string;
   verificationScore: number;
 }
-export interface DistributionUbo {
+export interface DistributionUboI {
   distributorId: string;
   firstName: string;
   lastName: string;
@@ -28,4 +28,5 @@ export interface DistributionUbo {
   idType: string;
   idNumber: string;
   idDocumentUrl: string;
+  ownershipPercentage: number;
 }

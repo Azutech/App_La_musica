@@ -1,64 +1,53 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { DistributorProfile } from '@prisma/client';
-import { DistributionProfileI } from '../interface/distribution.interface';
+import { DistributorUbo } from '@prisma/client';
+import { DistributionUboI } from '../interface/distribution.interface';
 
 @Injectable()
-export class DistributionProfileRepository {
+export class DistributionUboRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(
-    distributorData: DistributionProfileI,
-  ): Promise<DistributorProfile> {
-    return this.prisma.distributorProfile.create({
+  async create(distributorData: DistributionUboI): Promise<DistributorUbo> {
+    return this.prisma.distributorUbo.create({
       data: {
         distributorId: distributorData.distributorId,
-        legalName: distributorData.legalName,
-        businessType: distributorData.businessType,
-        registrationNumber: distributorData.registrationNumber,
-        taxId: distributorData.taxId,
-        country: distributorData.country,
-        state: distributorData.state,
-        city: distributorData.city,
-        address: distributorData.address,
-        website: distributorData.website,
+        firstName: distributorData.firstName,
+        lastName: distributorData.lastName,
+        email: distributorData.email,
+        phone: distributorData.phone,
+        nationality: distributorData.nationality,
+        idType: distributorData.idType,
+        idNumber: distributorData.idNumber,
+        idDocumentUrl: distributorData.idDocumentUrl,
+        ownershipPercentage: distributorData.ownershipPercentage,
       },
     });
   }
 
-  async findAll(): Promise<DistributorProfile[]> {
-    return this.prisma.distributorProfile.findMany();
+  async findAll(): Promise<DistributorUbo[]> {
+    return this.prisma.distributorUbo.findMany();
   }
 
-  async updateProfile(distributorId: string, dto: DistributionProfileI) {
-    //     const dtoWithoutId = { ...dto };
-    // delete dtoWithoutId.distributorId;
-    return this.prisma.distributorProfile.update({
+  async updateProfile(distributorId: string, dto: DistributionUboI) {
+    return this.prisma.distributorUbo.update({
       where: { distributorId },
       data: dto,
     });
   }
 
-  async findOne(distributorId: string): Promise<DistributorProfile | null> {
-    return await this.prisma.distributorProfile.findFirst({
+  async findOne(distributorId: string): Promise<DistributorUbo | null> {
+    return await this.prisma.distributorUbo.findFirst({
       where: { distributorId },
     });
   }
-  async findByLegalName(legalName: string): Promise<DistributorProfile | null> {
-    return await this.prisma.distributorProfile.findFirst({
-      where: { legalName },
+  async findByemail(email: string): Promise<DistributorUbo | null> {
+    return await this.prisma.distributorUbo.findFirst({
+      where: { email },
     });
   }
-  async findByRegistrationNumber(
-    registrationNumber: string,
-  ): Promise<DistributorProfile | null> {
-    return await this.prisma.distributorProfile.findFirst({
-      where: { registrationNumber },
-    });
-  }
-  async findByTaxId(taxId: string): Promise<DistributorProfile | null> {
-    return await this.prisma.distributorProfile.findFirst({
-      where: { taxId },
+  async findByPhone(phone: string): Promise<DistributorUbo | null> {
+    return await this.prisma.distributorUbo.findFirst({
+      where: { phone },
     });
   }
 }
