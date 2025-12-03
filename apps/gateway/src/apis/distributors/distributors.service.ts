@@ -140,7 +140,7 @@ export class DistributorService {
       throw err;
     }
   }
-  
+
   async viewProfile(distributorId: string) {
     try {
       const result = await firstValueFrom(

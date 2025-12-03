@@ -16,7 +16,7 @@ export enum BusinessType {
 }
 
 export enum IdType {
-  PASSPORT = 'password',
+  PASSPORT = 'international_passport',
   NATIONAL_ID = 'national_Id',
   DRIVER_LICENSE = 'driver_license',
   OTHER = 'other',

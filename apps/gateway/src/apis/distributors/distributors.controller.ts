@@ -84,7 +84,7 @@ export class ArtistController {
     return res
       .status(HttpStatus.OK)
       .json({ message: 'Distributor list retrieved successfully', data: id });
-  } 
+  }
   @UseGuards(JwtAuthGuard)
   @Put('updateProfile')
   async updateProfile(
@@ -132,7 +132,7 @@ export class ArtistController {
       .json({ message: 'User Ubo view successfully', data: id });
   }
 
-    @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('createdistroUbo')
   async createdistroUbo(
     @Req() req: any,
@@ -140,7 +140,8 @@ export class ArtistController {
     @Body() distributionUboDto: DistributionUboDto,
   ) {
     distributionUboDto.distributorId = req.user.userId;
-    const id = await this.distributorService.createdistroUbo(distributionUboDto);
+    const id =
+      await this.distributorService.createdistroUbo(distributionUboDto);
     return res
       .status(HttpStatus.OK)
       .json({ message: 'Profile updated successfully', data: id });
