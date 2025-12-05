@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
+import { PrismaService } from '../../../../prisma/prisma.service';
 import { DistributorUbo } from '@prisma/client';
 import { DistributionUboI } from '../interface/distribution.interface';
 

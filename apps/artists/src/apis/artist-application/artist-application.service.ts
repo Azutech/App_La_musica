@@ -1,10 +1,10 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
-import { ApplyArtistDto } from 'src/artist-application/dtos/applications.dto';
-import { ArtistApplicationRepository } from 'src/artist-application/repository/application.repository';
+import { ApplyArtistDto } from 'src/apis/artist-application/dtos/applications.dto';
+import { ArtistApplicationRepository } from 'src/apis/artist-application/repository/application.repository';
 import { ApplicationStatus } from './enums/enum.util';
-import { ArtistRepository } from 'src/artists/repository/artist.repository';
-import { DistributionRepository } from 'src/distribution/repository/distribution.repository';
+import { ArtistRepository } from 'src/apis/artists/repository/artist.repository';
+import { DistributionRepository } from 'src/apis/distribution/repository/distribution.repository';
 
 @Injectable()
 export class ArtistApplicationService {

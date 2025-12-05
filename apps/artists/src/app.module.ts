@@ -3,9 +3,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from 'prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
-import { ArtistApplicationModule } from './artist-application/artist-application.module';
-import { ArtistsModule } from './artists/artists.module';
-import { DistributionModule } from './distribution/distribution.module';
+import { ArtistApplicationModule } from './apis/artist-application/artist-application.module';
+import { ArtistsModule } from './apis/artists/artists.module';
+import { DistributionModule } from './apis/distribution/distribution.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { DistributionModule } from './distribution/distribution.module';
     ArtistApplicationModule,
     ArtistsModule,
     DistributionModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
