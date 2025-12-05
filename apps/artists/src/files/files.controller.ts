@@ -15,16 +15,16 @@ import { FilesService } from './files.service';
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
-@MessagePattern({ cmd: 'uploadFile' })
-async getUserApplication(@Payload() payload: { file: any }) {
-  // Deserialize the file
-  const file = {
-    buffer: Buffer.from(payload.file.buffer, 'base64'), // Convert back to buffer
-    originalname: payload.file.originalname,
-    mimetype: payload.file.mimetype,
-    size: payload.file.size,
-  };
+  @MessagePattern({ cmd: 'uploadFile' })
+  async getUserApplication(@Payload() payload: { file: any }) {
+    // Deserialize the file
+    const file = {
+      buffer: Buffer.from(payload.file.buffer, 'base64'), // Convert back to buffer
+      originalname: payload.file.originalname,
+      mimetype: payload.file.mimetype,
+      size: payload.file.size,
+    };
 
-  return await this.filesService.uploadFile(file);
-}
+    return await this.filesService.uploadFile(file);
+  }
 }

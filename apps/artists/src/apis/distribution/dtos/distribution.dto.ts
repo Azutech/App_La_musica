@@ -40,3 +40,13 @@ export class DistributionUboDto {
   idDocumentUrl: string;
   ownershipPercentage: number;
 }
+
+export class DistributionDocumentDto {
+  distributorId: string;
+  docType: string;
+  docUrl: string;
+  docHash: string;
+  mimeType: string;
+  status: string;
+  size: number;
+}

@@ -4,6 +4,16 @@ export interface DistributionI {
   avatar: string;
 }
 
+export interface DistributionDocumentI {
+  distributorId: string;
+  docType: string;
+  docUrl: string;
+  docHash: string;
+  mimeType: string;
+  size: number;
+  status: string;
+}
+
 export interface DistributionProfileI {
   distributorId: string;
   legalName: string;

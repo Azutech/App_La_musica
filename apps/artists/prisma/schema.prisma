@@ -168,11 +168,11 @@ model DistributorUbo {
 model DistributorDocument {
   id String        @id @default(uuid())
   distributor      Distributor @relation(fields: [distributorId], references: [id])
-  distributorId    String
+  distributorId    String @unique
   docType          String
   docUrl           String
   docHash          String
-  status           DocStatus @default(PENDING)
+  status           String
   rejectionReason  String?
   mimeType         String?
   size             Int?
@@ -244,13 +244,6 @@ enum RiskLevel {
   LOW
   MEDIUM
   HIGH
-}
-
-
-enum DocStatus {
-  PENDING
-  VERIFIED
-  REJECTED
 }
 
 

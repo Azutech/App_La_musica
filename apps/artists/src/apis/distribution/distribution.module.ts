@@ -6,6 +6,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { TokenRepository } from './repository/token.repository';
 import { DistributionProfileRepository } from './repository/distributionProfile.repository';
 import { DistributionUboRepository } from './repository/distributionUbo.repository';
+import { DistributionDocumentsRepository } from './repository/distributionDocuments.repository';
 
 @Module({
   controllers: [DistributionController],
@@ -15,6 +16,7 @@ import { DistributionUboRepository } from './repository/distributionUbo.reposito
     DistributionRepository,
     DistributionProfileRepository,
     DistributionUboRepository,
+    DistributionDocumentsRepository,
     TokenRepository,
   ],
 })

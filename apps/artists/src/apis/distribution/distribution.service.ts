@@ -3,18 +3,28 @@ import { hashSync, genSaltSync, compareSync } from 'bcrypt';
 import { DistributionRepository } from './repository/distribution.repository';
 import {
   CodeDto,
+  DistributionDocumentDto,
   DistributionDto,
   DistributionProfileDto,
   DistributionUboDto,
   LoginDto,
 } from './dtos/distribution.dto';
 import { RpcException } from '@nestjs/microservices';
-import { BusinessType, IdType, Status } from './enum/enum.utils';
+import {
+  BusinessType,
+  DocumentStatus,
+  DocumentType,
+  IdType,
+  MimeType,
+  Status,
+} from './enum/enum.utils';
 import * as moment from 'moment';
 import { TokenRepository } from './repository/token.repository';
 import { DistributionProfileRepository } from './repository/distributionProfile.repository';
 import { DistributionUboRepository } from './repository/distributionUbo.repository';
 import { validatePassword } from './utils/utils.distribution';
+import { DistributionDocumentsRepository } from './repository/distributionDocuments.repository';
+import { create } from 'domain';
 
 @Injectable()
 export class DistributionService {
@@ -22,6 +32,7 @@ export class DistributionService {
     private distributionRepository: DistributionRepository,
     private distributionProfileRepository: DistributionProfileRepository,
     private distributionUboRepository: DistributionUboRepository,
+    private distributionDocumentsRepository: DistributionDocumentsRepository,
     private tokenRepo: TokenRepository,
   ) {}
 
@@ -388,6 +399,45 @@ export class DistributionService {
     return newProfile;
   }
 
+  async addDocument(dto: DistributionDocumentDto) {
+    let { distributorId, docType, docUrl, docHash, mimeType, size, status } =
+      dto;
+    const user = await this.distributionRepository.findOne(distributorId);
+
+    if (!user) {
+      throw new RpcException({
+        message: 'Distributor not found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    const checkDistro = await this.distributionDocumentsRepository.findOne(
+      dto.distributorId,
+    );
+
+    if (checkDistro) {
+      throw new RpcException({
+        message: 'Document already exists for this distributor',
+        statusCode: HttpStatus.CONFLICT,
+      });
+    }
+
+    this.validateEnums(dto);
+
+    const createDoc: DistributionDocumentDto = {
+      distributorId,
+      docType,
+      docUrl,
+      docHash,
+      mimeType,
+      size,
+      status : DocumentStatus.PENDING
+    };
+
+    const addDoc = await this.distributionDocumentsRepository.create(createDoc);
+    return addDoc;
+  }
+
   private async createToken(tokenDto: {
     distributorId: string;
     email: string;
@@ -404,6 +454,36 @@ export class DistributionService {
       expiresAt,
     );
     return token;
+  }
+
+  private validateEnums(dto: DistributionDocumentDto): void {
+    const validations = [
+      {
+        value: dto.mimeType,
+        enum: MimeType,
+        field: 'MIME type',
+      },
+      {
+        value: dto.status,
+        enum: DocumentStatus,
+        field: 'document status',
+      },
+      {
+        value: dto.docType,
+        enum: DocumentType,
+        field: 'document type',
+      },
+    ];
+
+    for (const { value, enum: enumObj, field } of validations) {
+      const validValues = Object.values(enumObj);
+      if (!validValues.includes(value as any)) {
+        throw new RpcException({
+          message: `Invalid ${field}. Must be one of: [${validValues.join(', ')}]`,
+          statusCode: HttpStatus.BAD_REQUEST,
+        });
+      }
+    }
   }
 
   private generateRandomNumbers(): number {
