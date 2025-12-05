@@ -10,7 +10,6 @@ export class DistributionRepository {
   async create(distributorData: DistributionI): Promise<Distributor> {
     return this.prisma.distributor.create({
       data: {
-       
         email: distributorData.email,
         password: distributorData.password,
         avatar: distributorData.avatar,

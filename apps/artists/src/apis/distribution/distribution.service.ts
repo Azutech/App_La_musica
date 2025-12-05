@@ -44,7 +44,8 @@ export class DistributionService {
 
     if (!checkPassword) {
       throw new RpcException({
-        message: 'Password must be atleast 8 characters long and contain a number, a special character and an uppercase letter',
+        message:
+          'Password must be atleast 8 characters long and contain a number, a special character and an uppercase letter',
         statusCode: HttpStatus.BAD_REQUEST,
       });
     }
