@@ -8,18 +8,17 @@ export class FileUploadService {
     @Inject('FILE_SERVICE') private readonly distroClient: ClientProxy,
   ) {}
 
-    async uploadFile(file: any) {
-      try {
-        const result = await firstValueFrom(
-          this.distroClient
-            .send({ cmd: 'uploadFile' }, file)
-            .pipe(timeout(20000)), // 10 s guard
-        );
-  
-        return result;
-      } catch (err: any) {
-        // Nest already turned RPC exceptions into proper HTTP errors
-        throw err;
-      }
-    }
+async uploadFile(file: any) {
+  try {
+    const result = await firstValueFrom(
+      this.distroClient
+        .send({ cmd: 'uploadFile' }, { file }) // Wrap in object
+        .pipe(timeout(20000)),
+    );
+
+    return result;
+  } catch (err: any) {
+    throw err;
+  }
+}
 }

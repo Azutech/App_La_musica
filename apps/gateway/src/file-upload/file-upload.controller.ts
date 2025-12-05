@@ -15,17 +15,25 @@ import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 export class FileUploadController {
   constructor(private readonly fileUploadService: FileUploadService) {}
 
-  @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(
-    @Req() req: Request,
-    @Res() res: Response,
-    @UploadedFile() file: Express.Multer.File,
-  ): Promise<Response> {
-    const data = await this.fileUploadService.uploadFile(file);
+@Post('upload')
+@UseInterceptors(FileInterceptor('file'))
+async uploadFile(
+  @Req() req: Request,
+  @Res() res: Response,
+  @UploadedFile() file: Express.Multer.File,
+): Promise<Response> {
+  // Serialize file for microservice transfer
+  const serializedFile = {
+    buffer: file.buffer.toString('base64'), // Convert buffer to base64
+    originalname: file.originalname,
+    mimetype: file.mimetype,
+    size: file.size,
+  };
 
-    return res
-      .status(HttpStatus.OK)
-      .json({ message: 'Successfully uploaded file', data });
-  }
+  const data = await this.fileUploadService.uploadFile(serializedFile);
+
+  return res
+    .status(HttpStatus.OK)
+    .json({ message: 'Successfully uploaded file', data });
+}
 }
