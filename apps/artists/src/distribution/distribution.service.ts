@@ -14,6 +14,7 @@ import * as moment from 'moment';
 import { TokenRepository } from './repository/token.repository';
 import { DistributionProfileRepository } from './repository/distributionProfile.repository';
 import { DistributionUboRepository } from './repository/distributionUbo.repository';
+import { validatePassword } from './utils/utils.distribution';
 
 @Injectable()
 export class DistributionService {
@@ -25,7 +26,7 @@ export class DistributionService {
   ) {}
 
   async addDistributor(distributorData: DistributionDto) {
-    let { name, email, password, website } = distributorData;
+    let { name, email, password, avatar } = distributorData;
 
     // Validate work email
     this.validateWorkEmail(email);
@@ -39,13 +40,24 @@ export class DistributionService {
       });
     }
 
+    const checkPassword = validatePassword(password);
+
+    if (!checkPassword) {
+      throw new RpcException({
+        message:
+          'Password must be atleast 8 characters long and contain a number, a special character and an uppercase letter',
+        status: HttpStatus.BAD_REQUEST,
+      });
+    }
+
     password = hashSync(password, genSaltSync());
 
+    avatar = `https://api.dicebear.com/5.x/micah/svg?seed=${encodeURIComponent(email)}`;
+
     const createdDistributor = await this.distributionRepository.create({
-      name: name,
       email: email,
       password: password,
-      website: website,
+      avatar: avatar,
     });
 
     let token = await this.createToken({

@@ -53,11 +53,10 @@ model ArtistApplication {
 
 model Distributor {
   id         String   @id @default(uuid())
-  name       String
   email      String   @unique
   password   String
   isActive   Boolean           @default(false)
-  website    String?
+  avatar     String?
   status     Status   @default(pending)
   artists    Artist[] // One distributor -> many artists
   artistApplications ArtistApplication[]  // <-- ADD THIS LINE
