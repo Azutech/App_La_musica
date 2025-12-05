@@ -1,8 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ApplyArtistDto } from '../distributors/dto/artist.dto';
-import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
-import { timeout } from 'rxjs/internal/operators/timeout';
-import { ClientProxy } from '@nestjs/microservices/client/client-proxy';
+import { firstValueFrom, timeout } from 'rxjs';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class ArtistService {

@@ -8,26 +8,19 @@ import {
   HttpStatus,
   UseInterceptors,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { FilesService } from './files.service';
+
 
 @Controller('files')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
-
-    @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(
-    @Req() req: Request,
-    @Res() res: Response,
-    @UploadedFile() file: Express.Multer.File,
-  ): Promise<Response> {
-    const data = await this.filesService.uploadFile(file);
-
-    return res
-      .status(HttpStatus.OK)
-      .json({ message: 'Successfully uploaded file', data });
+  @MessagePattern({ cmd: 'uploadFile' })
+  async getUserApplication(@Payload() payload: { file: any }) {
+    return await this.filesService.uploadFile(
+      payload.file,
+    );
   }
+
 }
