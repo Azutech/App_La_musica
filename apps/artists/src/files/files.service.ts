@@ -28,6 +28,7 @@ export class FilesService {
         secretAccessKey: this.configService.get('B2_APPLICATION_KEY'),
       },
     });
+    console.log(this.s3Client.config.credentials)
 
     this.logger.log('B2 Storage initialized');
   }
