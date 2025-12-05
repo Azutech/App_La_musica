@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom, timeout} from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 import { JwtService } from 'src/guards/jwt/jwt.service';
 import {
-  ApplyArtistDto,
+  // ApplyArtistDto,
   CodeDto,
   DistributionDto,
   DistributionProfileDto,
