@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { LoggingInterceptor } from './common/filters/logging.interceptor';
 import { DistributorModule } from './apis/distributors/distributors.module';
 import { ArtistModule } from './apis/artist/artist.module';
+import { FileUploadModule } from './file-upload/file-upload.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ArtistModule } from './apis/artist/artist.module';
     AuthModule,
     DistributorModule,
     ArtistModule,
+    FileUploadModule,
   ],
   controllers: [AppController],
   providers: [

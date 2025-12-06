@@ -1,27 +1,20 @@
-export class ApplyArtistDto {
-  userId: string; // from Auth service
-  stageName: string;
-  genre?: string;
-  bio?: string;
-  distributorId?: string;
-}
-
-export class DistributionDto {
-  name: string;
+export interface DistributionI {
   email: string;
   password: string;
-  website: string;
+  avatar: string;
 }
 
-export class LoginDto {
-  email: string;
-  password: string;
-}
-export class CodeDto {
-  code: number;
+export interface DistributionDocumentI {
+  distributorId: string;
+  docType: string;
+  docUrl: string;
+  docHash: string;
+  mimeType: string;
+  size: number;
+  status: string;
 }
 
-export class DistributionProfileDto {
+export interface DistributionProfileI {
   distributorId: string;
   legalName: string;
   businessType: string;
@@ -34,8 +27,7 @@ export class DistributionProfileDto {
   city: string;
   verificationScore: number;
 }
-
-export class DistributionUboDto {
+export interface DistributionUboI {
   distributorId: string;
   firstName: string;
   lastName: string;
