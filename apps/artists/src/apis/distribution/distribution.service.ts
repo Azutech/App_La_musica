@@ -438,6 +438,26 @@ export class DistributionService {
     return addDoc;
   }
 
+
+  async viewDocuments(distributorId: string) {
+    const findDistro = await this.distributionRepository.findOne(distributorId);
+
+    if (!findDistro) {
+      throw new RpcException({
+        message: 'Distributor not Found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
+    }
+    const existing =
+      await this.distributionDocumentsRepository.findALLDocuments();
+
+    if (existing.length === 0) {
+      return [];
+    }
+
+    return existing;
+  }
+
   private async createToken(tokenDto: {
     distributorId: string;
     email: string;

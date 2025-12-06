@@ -65,4 +65,8 @@ export class DistributionController {
   async viewProfile(distributorId: string) {
     return await this.distributionService.viewProfile(distributorId);
   }
+  @MessagePattern({ cmd: 'viewDocuments' })
+  async viewDocuments(distributorId: string) {
+    return await this.distributionService.viewDocuments(distributorId);
+  }
 }
