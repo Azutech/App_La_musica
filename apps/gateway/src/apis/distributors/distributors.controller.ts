@@ -131,6 +131,15 @@ export class ArtistController {
       .status(HttpStatus.OK)
       .json({ message: 'User Ubo view successfully', data: id });
   }
+  @UseGuards(JwtAuthGuard)
+  @Get('view-Documents')
+  async viewDocuments(@Req() req: any, @Res() res: Response) {
+    const distributionId = req.user.userId;
+    const id = await this.distributorService.viewDocuments(distributionId);
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: 'User Documents view successfully', data: id });
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('createdistroUbo')

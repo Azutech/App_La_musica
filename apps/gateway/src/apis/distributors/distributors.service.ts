@@ -184,4 +184,18 @@ export class DistributorService {
       throw err;
     }
   }
+  async viewDocuments(distributorId: string) {
+    try {
+      const result = await firstValueFrom(
+        this.distroClient
+          .send({ cmd: 'viewDocuments' }, distributorId)
+          .pipe(timeout(20000)), // 10 s guard
+      );
+
+      return result;
+    } catch (err: any) {
+      // Nest already turned RPC exceptions into proper HTTP errors
+      throw err;
+    }
+  }
 }
